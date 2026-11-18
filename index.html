@@ -1,0 +1,1586 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="UX-АД">
+<meta name="theme-color" content="#17121f">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-192.png">
+<link rel="manifest" href="manifest.webmanifest">
+<title>UX-АД — 30 кругов кривых интерфейсов</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;800&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#17121f;--bg2:#231b30;--line:#3a2e4d;--ink:#f4eefc;--mute:#a89bbd;--accent:#ff4f6d;--ok:#2fd27a;--gold:#ffc83d}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%}
+body{background:radial-gradient(1200px 600px at 20% -10%,#3a1e4f 0,transparent 60%),radial-gradient(900px 500px at 110% 110%,#4a1630 0,transparent 60%),var(--bg);background-attachment:fixed;color:var(--ink);font-family:Inter,-apple-system,system-ui,sans-serif;touch-action:manipulation;-webkit-user-select:none;user-select:none;overflow-x:hidden;-webkit-text-size-adjust:100%}
+input,textarea,select{-webkit-user-select:text;user-select:text;font-family:inherit}
+button{font-family:inherit;cursor:pointer;touch-action:manipulation}
+.wrap{max-width:780px;margin:0 auto;padding:calc(14px + env(safe-area-inset-top)) calc(14px + env(safe-area-inset-right)) calc(40px + env(safe-area-inset-bottom)) calc(14px + env(safe-area-inset-left))}
+.display{font-family:Unbounded,Inter,sans-serif}
+
+/* MENU */
+.logo{font-size:clamp(46px,11vw,88px);font-weight:800;letter-spacing:-2px;line-height:.95;margin:22px 0 6px}
+.logo span{color:var(--accent);display:inline-block;transform:rotate(-8deg) translateY(4px)}
+.tag{color:var(--mute);font-size:16px;margin:0 0 18px;max-width:560px;line-height:1.45}
+.stats{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 18px}
+.stat{background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:10px 14px;font-weight:700}
+.stat small{display:block;color:var(--mute);font-weight:400;font-size:12px}
+.cont{background:linear-gradient(135deg,#ff4f6d,#c2367c);color:#fff;border:none;border-radius:16px;padding:16px 20px;font-size:18px;font-weight:800;width:100%;margin-bottom:22px;box-shadow:0 10px 30px #ff4f6d40}
+.world{margin:22px 0 10px;display:flex;align-items:baseline;gap:10px}
+.world h2{font-family:Unbounded,Inter,sans-serif;font-size:18px;margin:0}
+.world span{color:var(--mute);font-size:13px}
+.levels{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.lvl{background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:12px 13px;text-align:left;color:var(--ink);min-height:96px;display:flex;flex-direction:column;gap:3px;transition:transform .12s}
+.lvl:active{transform:scale(.96)}
+.lvl .n{font-family:Unbounded,Inter,sans-serif;font-size:11px;color:var(--mute)}
+.lvl .t{font-weight:800;font-size:16px;line-height:1.15}
+.lvl .s{margin-top:auto;color:var(--gold);letter-spacing:2px;font-size:14px}
+.lvl.done{border-color:#2fd27a88}
+.lvl.locked{opacity:.38}
+.lvl.locked .t::before{content:"🔒 "}
+.lvl.next{border-color:var(--accent);box-shadow:0 0 0 2px #ff4f6d55}
+.menu-foot{margin-top:28px;color:var(--mute);font-size:13px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.linkbtn{background:none;border:none;color:var(--mute);text-decoration:underline;font-size:13px;padding:6px 0}
+
+/* LEVEL SHELL */
+.topbar{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.ibtn{background:var(--bg2);border:1px solid var(--line);color:var(--ink);border-radius:12px;height:44px;min-width:44px;padding:0 12px;font-size:17px;font-weight:600}
+.topbar .title{flex:1;min-width:0;font-family:Unbounded,Inter,sans-serif;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fails{color:var(--accent);font-weight:800;font-size:15px;white-space:nowrap}
+.task{background:linear-gradient(135deg,#ff4f6d,#c2367c);border-radius:16px;padding:13px 16px;margin-bottom:12px;font-size:16px;font-weight:600;line-height:1.4;box-shadow:0 8px 30px #ff4f6d33}
+.task b{font-weight:800}
+.task small{display:block;opacity:.88;font-weight:400;font-size:13px;margin-top:4px}
+.screen{background:#fff;color:#1c1c1e;border-radius:20px;position:relative;overflow:hidden;box-shadow:0 20px 60px #0008}
+.shake{animation:shake .45s}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-12px)}40%{transform:translateX(10px)}60%{transform:translateX(-7px)}80%{transform:translateX(5px)}}
+.sb{display:flex;align-items:center;justify-content:space-between;padding:8px 18px 6px;font:600 14px -apple-system,system-ui,sans-serif;color:#1c1c1e;background:#fff;border-bottom:1px solid #f0f0f0}
+.sb[hidden]{display:none}
+.sb .bell{background:#f2f2f7;border:none;border-radius:999px;padding:3px 10px;font-size:13px;font-weight:700}
+.sb .bell.has{background:#ff3b30;color:#fff}
+
+/* in-app light UI kit */
+.vp{position:relative;min-height:64vh;font-family:-apple-system,"SF Pro Text","Segoe UI",Roboto,Arial,sans-serif;color:#1c1c1e;font-size:16px;line-height:1.35}
+.ah{display:flex;align-items:center;gap:10px;padding:14px 16px;font-weight:700;font-size:18px;border-bottom:1px solid #eee;background:#fff}
+.ah .sp{flex:1}
+.p16{padding:16px}
+.btn{border:none;border-radius:11px;padding:13px 18px;font-size:16px;font-weight:600;background:#007aff;color:#fff;line-height:1.2}
+.btn.g{background:#34c759}.btn.r{background:#ff3b30}.btn.gr{background:#e5e5ea;color:#1c1c1e}.btn.w{width:100%}.btn.o{background:#ff9500}
+.btn.ghost{background:none;color:#007aff;padding:8px 6px;font-weight:500}
+.btn.tb{background:#f2f2f7;color:#b0b0b5;font-size:12px;padding:7px 11px;font-weight:400;border-radius:7px}
+.btn:disabled{background:#d1d1d6!important;color:#8e8e93!important}
+.btn+.btn.w{margin-top:8px}
+.inp{width:100%;font-size:17px;padding:12px;border:1.5px solid #d1d1d6;border-radius:10px;background:#fff;color:#1c1c1e;outline:none}
+.inp:focus{border-color:#007aff}
+select.inp{-webkit-appearance:none;appearance:none;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='2' fill='none'/%3E%3C/svg%3E") no-repeat right 12px center}
+.lbl{font-size:13px;color:#6e6e73;margin:14px 0 6px;display:block}
+.muted{color:#8e8e93}.tiny{font-size:11px;color:#b5b5ba;line-height:1.35}
+.row{display:flex;align-items:center;gap:10px}
+.li{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 16px;border-bottom:1px solid #eee;background:#fff;width:100%;text-align:left;font-size:16px;color:#1c1c1e;border-left:none;border-right:none;border-top:none}
+.li .chev{color:#c7c7cc}
+.grp{background:#f2f2f7;padding:16px 16px 6px;font-size:13px;color:#6e6e73;text-transform:uppercase}
+.tg{width:52px;height:32px;border-radius:16px;background:#e5e5ea;position:relative;flex:none;border:none;transition:background .2s;padding:0}
+.tg::after{content:"";position:absolute;top:2px;left:2px;width:28px;height:28px;border-radius:50%;background:#fff;transition:left .2s;box-shadow:0 2px 4px #0003}
+.tg.on{background:#34c759}.tg.on::after{left:22px}
+.chip{border:1.5px solid #d1d1d6;border-radius:999px;padding:9px 14px;background:#fff;font-size:15px;color:#1c1c1e}
+.chip.on{background:#007aff;color:#fff;border-color:#007aff}
+.cb{display:flex;gap:12px;align-items:flex-start;padding:10px 0;font-size:15px}
+.cb input{width:22px;height:22px;flex:none;margin:0;accent-color:#007aff}
+.card{border:1px solid #e5e5ea;border-radius:14px;padding:14px;background:#fff}
+.price{font-weight:800}
+.err{color:#ff3b30;font-size:14px;margin-top:8px}
+hr.s{border:none;border-top:1px solid #eee;margin:12px 0}
+
+/* global sheets, pushes, toasts */
+.gsheet{position:fixed;inset:0;z-index:40;background:rgba(10,8,16,.55);display:flex;align-items:center;justify-content:center;padding:16px;animation:fade .15s}
+.gsheet>.sh{background:#fff;color:#1c1c1e;border-radius:18px;max-width:520px;width:100%;max-height:88vh;overflow:auto;-webkit-overflow-scrolling:touch;padding:18px;font-family:-apple-system,"Segoe UI",Roboto,Arial,sans-serif;font-size:16px;line-height:1.4;box-shadow:0 20px 60px #0008}
+.gsheet h3{margin:0 0 8px;font-size:19px}
+@keyframes fade{from{opacity:0}}
+.gpush{position:fixed;left:50%;top:calc(10px + env(safe-area-inset-top));transform:translate(-50%,-160%);width:min(94vw,440px);background:rgba(245,245,247,.97);color:#1c1c1e;border-radius:18px;padding:11px 14px;z-index:60;box-shadow:0 10px 40px #0006;transition:transform .35s;font-family:-apple-system,system-ui,sans-serif;font-size:15px;line-height:1.3}
+.gpush.on{transform:translate(-50%,0)}
+.gpush b{display:block;font-size:13px;color:#6e6e73;font-weight:600;margin-bottom:2px}
+#toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(160%);max-width:min(92vw,620px);background:#111;color:#fff;padding:13px 18px;border-radius:14px;font-size:15px;line-height:1.35;z-index:99;transition:transform .3s;box-shadow:0 10px 40px #000a}
+#toast.on{transform:translateX(-50%) translateY(0)}
+#toast.bad{background:#b3193a}#toast.good{background:#13854a}
+.overlay{position:fixed;inset:0;background:#0b0810ee;display:flex;align-items:center;justify-content:center;z-index:70;padding:20px}
+.wcard{background:var(--bg2);border-radius:24px;padding:26px;max-width:460px;width:100%;text-align:center;border:1px solid var(--line);color:var(--ink)}
+.wcard h2{font-family:Unbounded,Inter,sans-serif;margin:6px 0 8px;font-size:24px}
+.wcard p{color:var(--mute);margin:0 0 18px;font-size:16px;line-height:1.4}
+.wstars{font-size:46px;letter-spacing:6px;color:var(--gold);margin:4px 0}
+.wstars i{font-style:normal;display:inline-block;animation:pop .4s backwards}
+.wstars i.off{color:#4a3d5c}
+@keyframes pop{from{transform:scale(0) rotate(-90deg)}}
+.big{background:var(--ok);color:#06210f;border:none;border-radius:14px;padding:16px 22px;font-size:18px;font-weight:800;width:100%}
+.big.alt{background:#3a2e4d;color:var(--ink);margin-top:10px}
+.hintsheet .sh{background:var(--bg2);color:var(--ink);border:1px solid var(--line)}
+.hintsheet h3{font-family:Unbounded,Inter,sans-serif;font-size:17px}
+.hintsheet .hb{background:#17121f;border-radius:12px;padding:12px 14px;margin:10px 0;line-height:1.5;font-size:15px}
+.hintsheet .big{font-size:16px;padding:13px}
+/*LEVEL_CSS*/
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<div id="toast"></div>
+<script>
+"use strict";
+/* ================= CORE ================= */
+const app=document.getElementById('app');
+const LEVELS=[];
+const WORLDS=['Разминка','Шопинг','Деньги и бюрократия','Гаджеты','Офисный ад'];
+const WORLD_DESC=['Привыкаем к боли','Купить — легко. Купить правильно — нет','Здесь каждая копейка на счету','Умные устройства. Умнее тебя','Финальный босс — твоя работа'];
+function LV(def){LEVELS.push(def);if(def.css){const s=document.createElement('style');s.textContent=def.css;document.head.appendChild(s)}}
+const h=html=>{const t=document.createElement('template');t.innerHTML=html.trim();return t.content.firstElementChild};
+const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const fmt=n=>String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g,' ');
+const rub=n=>fmt(n)+' ₽';
+const store={get(){try{return JSON.parse(localStorage.getItem('uxad2')||'null')}catch(e){return null}},set(v){try{localStorage.setItem('uxad2',JSON.stringify(v))}catch(e){}}};
+let save=Object.assign({done:{},fails:0},store.get()||{});
+let cur=-1,levelFails=0,solShown=false,t0=0,timers=[],notifs=[],won=false;
+function later(fn,ms){const t=setTimeout(()=>{if(!won||true)fn()},ms);timers.push(t);return t}
+function every(fn,ms){const t=setInterval(fn,ms);timers.push(t);return t}
+function clearAll(){const tt=document.getElementById('toast');if(tt)tt.classList.remove('on');timers.forEach(t=>{clearTimeout(t);clearInterval(t)});timers=[];document.querySelectorAll('.gsheet,.gpush,.overlay').forEach(e=>e.remove());notifs=[]}
+let toastT;
+function toast(msg,kind='',ms=3400){const t=document.getElementById('toast');t.className=kind;t.innerHTML=msg;requestAnimationFrame(()=>t.classList.add('on'));clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('on'),ms)}
+function fail(msg){
+  if(won)return;
+  levelFails++;save.fails++;store.set(save);
+  const f=document.querySelector('.fails');if(f)f.textContent='💀 '+levelFails;
+  const s=document.querySelector('.screen');if(s){s.classList.remove('shake');void s.offsetWidth;s.classList.add('shake')}
+  toast(msg,'bad',4200);
+}
+function starsFor(){if(solShown)return 1;if(levelFails===0)return 3;if(levelFails<=3)return 2;return 1}
+function sheet(html,cls=''){const el=h(`<div class="gsheet ${cls}"><div class="sh">${html}</div></div>`);document.body.appendChild(el);el.close=()=>el.remove();return el}
+function push(app,text,delay=900){
+  later(()=>{
+    notifs.unshift({app,text,time:document.querySelector('.sb .tm')?.textContent||''});
+    const b=document.querySelector('.sb .bell');if(b){b.classList.add('has');b.textContent='🔔 '+notifs.length}
+    document.querySelectorAll('.gpush').forEach(e=>e.remove());
+    const p=h(`<div class="gpush" data-t="push"><b>${app} · сейчас</b>${text}</div>`);
+    document.body.appendChild(p);requestAnimationFrame(()=>requestAnimationFrame(()=>p.classList.add('on')));
+    p.onclick=()=>p.remove();
+    later(()=>{p.classList.remove('on');later(()=>p.remove(),400)},4200);
+  },delay);
+}
+function openNotifs(){
+  const s=sheet(`<h3>Уведомления</h3>${notifs.length?notifs.map(n=>`<div style="background:#f2f2f7;border-radius:12px;padding:10px 12px;margin:8px 0"><div style="font-size:12px;color:#8e8e93">${n.app}</div>${n.text}</div>`).join(''):'<p class="muted">Пусто. Как и обещания этого интерфейса.</p>'}<button class="btn w gr" data-t="nclose" style="margin-top:8px">Закрыть</button>`);
+  s.querySelector('[data-t=nclose]').onclick=()=>s.close();
+}
+function win(){
+  if(won)return;won=true;
+  const lv=LEVELS[cur];const stars=starsFor();const sec=Math.round((Date.now()-t0)/1000);
+  const prev=save.done[lv.id];
+  if(!prev||prev.stars<stars)save.done[lv.id]={stars,time:prev&&prev.time?Math.min(prev.time,sec):sec};
+  store.set(save);
+  later(()=>{
+    document.querySelectorAll('.gsheet,.gpush').forEach(e=>e.remove());
+    const last=cur===LEVELS.length-1;
+    const quips=['Дизайнер этого экрана плачет.','Ты сильнее этого интерфейса.','UX-отдел в шоке.','Пиксели повержены.','Нервы — сталь.','Ни одна кнопка не ушла от тебя.'];
+    const o=h(`<div class="overlay" data-t="win"><div class="wcard">
+      <div class="wstars">${[1,2,3].map(i=>`<i class="${i<=stars?'':'off'}" style="animation-delay:${i*.15}s">★</i>`).join('')}</div>
+      <h2>Уровень ${cur+1} пройден!</h2>
+      <p>${levelFails===0&&!solShown?'Без единой ошибки. Подозрительно. Ты точно не робот?':'Ошибок: '+levelFails+(solShown?' · с подсказкой':'')+'. '+quips[rnd(0,quips.length-1)]}<br><small>Время: ${Math.floor(sec/60)}:${String(sec%60).padStart(2,'0')}</small></p>
+      <button class="big" data-t="next">${last?'Финал →':'Следующий уровень →'}</button>
+      <button class="big alt" data-t="tomenu">К списку уровней</button></div></div>`);
+    o.querySelector('[data-t=next]').onclick=()=>{o.remove();last?finale():openLevel(cur+1)};
+    o.querySelector('[data-t=tomenu]').onclick=()=>{o.remove();menu()};
+    document.body.appendChild(o);
+  },350);
+}
+function isUnlocked(i){return i===0||!!save.done[LEVELS[i-1].id]||!!save.done[LEVELS[i].id]}
+function totalStars(){return Object.values(save.done).reduce((a,d)=>a+(d.stars||0),0)}
+
+/* ================= MENU ================= */
+function menu(){
+  clearAll();cur=-1;app.innerHTML='';
+  const doneN=Object.keys(save.done).length;
+  let next=LEVELS.findIndex((l,i)=>!save.done[l.id]&&isUnlocked(i));
+  const m=h(`<div>
+    <div class="logo display">UX<span>-</span>АД</div>
+    <p class="tag">30 самых кривых интерфейсов: банки, билеты, госуслуги, гаджеты и офис. Задания простые. Интерфейсы — нет. Читай внимательно, думай, не верь кнопкам.</p>
+    <div class="stats"><div class="stat">${doneN}/${LEVELS.length}<small>пройдено</small></div><div class="stat">★ ${totalStars()}/${LEVELS.length*3}<small>звёзд</small></div><div class="stat">💀 ${save.fails}<small>ошибок</small></div></div>
+    ${next>=0?`<button class="cont" data-t="continue">${doneN?'Продолжить':'Начать'}: уровень ${next+1} →</button>`:''}
+    <div id="worlds"></div>
+    <div class="menu-foot"><span>⭐⭐⭐ — без ошибок · ⭐⭐ — до 3 ошибок · ⭐ — с решением</span><button class="linkbtn" id="reset">Сбросить прогресс</button></div>
+  </div>`);
+  const W=m.querySelector('#worlds');
+  WORLDS.forEach((wn,wi)=>{
+    W.appendChild(h(`<div class="world"><h2>${wi+1}. ${wn}</h2><span>${WORLD_DESC[wi]}</span></div>`));
+    const g=h('<div class="levels"></div>');
+    LEVELS.forEach((lv,i)=>{
+      if(Math.floor(i/6)!==wi)return;
+      const d=save.done[lv.id],un=isUnlocked(i);
+      const b=h(`<button class="lvl ${d?'done':''} ${un?'':'locked'} ${i===next?'next':''}" data-t="lvl-${i+1}"><div class="n">УРОВЕНЬ ${i+1}</div><div class="t">${lv.name}</div><div class="s">${d?'★'.repeat(d.stars)+'<span style="color:#4a3d5c">'+'★'.repeat(3-d.stars)+'</span>':''}</div></button>`);
+      b.onclick=()=>un?openLevel(i):toast('Сначала пройди предыдущий уровень. Да, это тоже плохой UX.');
+      g.appendChild(b);
+    });
+    W.appendChild(g);
+  });
+  const c=m.querySelector('[data-t=continue]');if(c)c.onclick=()=>openLevel(next);
+  m.querySelector('#reset').onclick=e=>{if(e.target.dataset.sure){save={done:{},fails:0};store.set(save);menu();toast('Прогресс сброшен')}else{e.target.dataset.sure=1;e.target.textContent='Точно? Нажми ещё раз'}};
+  app.appendChild(m);window.scrollTo(0,0);
+}
+
+/* ================= LEVEL ================= */
+function openLevel(i){
+  clearAll();cur=i;levelFails=0;solShown=false;won=false;t0=Date.now();
+  const lv=LEVELS[i];app.innerHTML='';
+  const shell=h(`<div>
+    <div class="topbar">
+      <button class="ibtn" data-t="menu-back">☰</button>
+      <div class="title">${i+1}. ${lv.name}</div>
+      <span class="fails">💀 0</span>
+      <button class="ibtn" data-t="hint">💡</button>
+      <button class="ibtn" data-t="restart">↻</button>
+    </div>
+    <div class="task">${lv.task}</div>
+    <div class="screen"><div class="sb" hidden><span class="tm">9:41</span><button class="bell" data-t="bell">🔔 0</button><span>📶 ᯤ 🔋</span></div><div class="vp"></div></div>
+  </div>`);
+  app.appendChild(shell);
+  shell.querySelector("[data-t=menu-back]").onclick=menu;
+  shell.querySelector('[data-t=restart]').onclick=()=>openLevel(i);
+  shell.querySelector('[data-t=bell]').onclick=openNotifs;
+  shell.querySelector('[data-t=hint]').onclick=()=>showHint(lv);
+  window.scrollTo(0,0);
+  const V=shell.querySelector('.vp');
+  const api={win,fail,toast,later,every,sheet,push,
+    sb(time){const s=shell.querySelector('.sb');s.hidden=false;s.querySelector('.tm').textContent=time}};
+  lv.render(V,api);
+}
+function showHint(lv){
+  const s=sheet(`<h3>💡 Подсказка</h3><div class="hb">${lv.hints[0]}</div>
+    <div id="sol"></div>
+    <button class="big alt" data-t="showsol" style="margin-top:6px">Показать решение (максимум ★)</button>
+    <button class="big" data-t="hclose" style="margin-top:10px">Понял, сам справлюсь</button>`,'hintsheet');
+  const sol=s.querySelector('#sol');
+  const showSol=()=>{solShown=true;sol.innerHTML=`<div class="hb" style="border:1px solid #ff4f6d">${lv.hints[1]}</div><button class="big alt" data-t="skip">Пропустить уровень (0 ★)</button>`;
+    s.querySelector('[data-t=showsol]').remove();
+    sol.querySelector('[data-t=skip]').onclick=()=>{s.close();if(!save.done[lv.id]){save.done[lv.id]={stars:0,time:0};store.set(save)}cur===LEVELS.length-1?finale():openLevel(cur+1)}};
+  if(solShown)showSol();
+  else s.querySelector('[data-t=showsol]').onclick=showSol;
+  s.querySelector('[data-t=hclose]').onclick=()=>s.close();
+}
+function finale(){
+  clearAll();cur=-1;app.innerHTML='';
+  const f=h(`<div style="text-align:center;padding-top:6vh">
+    <div style="font-size:80px">🏅</div>
+    <div class="logo display" style="font-size:clamp(34px,8vw,60px)">Ты прошёл<br><span>UX-АД</span></div>
+    <p class="tag" style="margin:16px auto 10px">Тридцать кругов плохого дизайна позади. Звёзд: <b style="color:var(--gold)">${totalStars()}/${LEVELS.length*3}</b>, ошибок: <b style="color:var(--accent)">${save.fails}</b>.</p>
+    <p class="tag" style="margin:0 auto 24px">Теперь у тебя иммунитет к кривым сайтам. Где-то в мире один дизайнер почувствовал укол совести.</p>
+    <button class="big" data-t="fin-menu" style="max-width:360px">В меню</button></div>`);
+  f.querySelector('[data-t=fin-menu]').onclick=menu;
+  app.appendChild(f);window.scrollTo(0,0);
+}
+/* ===================== МИР 1: РАЗМИНКА ===================== */
+
+/* 1. ВХОД */
+LV({id:'login',name:'Вход в игру',
+task:'Войди в игру. Логин и пароль у тебя где-то есть… наверное.<small>Как в DeZigner: даже войти — уже головоломка.</small>',
+hints:['Восстановление пароля — ловушка, но очень болтливая: внимательно читай всё, что пишет система. Пропустил уведомление — оно хранится под 🔔 в статус-баре.',
+'Логин: «Забыли логин?» → «Отправить» → придёт уведомление: <b>player_one</b>. Пароль: начни сброс, введи логин — на следующем шаге система проговорится, что старый пароль <b>qwerty123</b>. Ничего не сбрасывай, просто войди со старым паролем.'],
+css:`.l1{padding:26px 22px;max-width:420px;margin:0 auto}.l1-logo{font:800 40px Unbounded,sans-serif;text-align:center;color:#5b2bd6}.l1-logo span{color:#ff4f6d}.l1-sub{text-align:center;color:#8e8e93;margin-bottom:16px}.l1-caps{background:#fff4d6;color:#8a6200;font-size:13px;border-radius:8px;padding:6px 10px;margin-bottom:12px;text-align:center}.l1 .inp{margin-bottom:10px}.l1-links{display:flex;justify-content:space-between;margin:14px 0;font-size:14px}.l1-links a{color:#007aff}.l1-or{text-align:center;color:#c7c7cc;margin:6px 0 10px;font-size:13px}`,
+render(V,api){
+  api.sb('09:41');
+  V.innerHTML=`<div class="l1"><div class="l1-logo">UX<span>·</span>ID</div><div class="l1-sub">Единый вход в Ад</div>
+  <div class="l1-caps">⚠️ Возможно, включён Caps Lock. А возможно, и нет.</div>
+  <input class="inp" data-t="login" placeholder="Логин" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
+  <input class="inp" type="password" data-t="pass" placeholder="Пароль" autocomplete="off" autocapitalize="off">
+  <label class="cb"><input type="checkbox" checked> Запомнить меня на 10 лет</label>
+  <button class="btn w" data-t="enter">Войти</button>
+  <div class="l1-links"><a data-t="fl">Забыли логин?</a><a data-t="fp">Забыли пароль?</a><a data-t="reg">Регистрация</a></div>
+  <div class="l1-or">— или —</div>
+  <button class="btn gr w" data-t="alt1">Войти через Госкривуслуги</button>
+  <button class="btn gr w" data-t="alt2">Войти по отпечатку носа</button></div>`;
+  const q=s=>V.querySelector(s);let newPass=null;
+  q('[data-t=reg]').onclick=()=>api.toast('Регистрация новых игроков закрыта до 2031 года.');
+  q('[data-t=alt1]').onclick=()=>api.toast('Ошибка 418: сервер оказался чайником ☕');
+  q('[data-t=alt2]').onclick=()=>api.toast('Поднесите нос к экрану… Нос не распознан.');
+  q('[data-t=fl]').onclick=()=>{
+    const s=api.sheet(`<h3>Восстановление логина</h3><p>Мы отправим логин на привязанную почту <b>p•••••@•••.ru</b>.</p><button class="btn w" data-t="sendl">Отправить</button><button class="btn w gr" data-t="x">Отмена</button>`);
+    s.querySelector('[data-t=x]').onclick=s.close;
+    s.querySelector('[data-t=sendl]').onclick=()=>{s.close();api.toast('Письмо отправлено. Проверьте почту (её здесь нет).');api.push('📧 Почта','UX·ID: ваш логин — <b>player_one</b>',1400)};
+  };
+  q('[data-t=fp]').onclick=()=>{
+    const s=api.sheet(`<h3>Сброс пароля · шаг 1 из 3</h3><label class="lbl">Ваш логин</label><input class="inp" data-t="fplogin" autocapitalize="off" autocorrect="off"><div class="err" id="e"></div><button class="btn w" data-t="fpnext" style="margin-top:12px">Далее</button><button class="btn w gr" data-t="x">Отмена</button>`);
+    s.querySelector('[data-t=x]').onclick=s.close;
+    s.querySelector('[data-t=fpnext]').onclick=()=>{
+      if(s.querySelector('[data-t=fplogin]').value.trim().toLowerCase()!=='player_one'){s.querySelector('#e').textContent='Пользователь не найден. Или найден. Мы не скажем.';return}
+      s.querySelector('.sh').innerHTML=`<h3>Сброс пароля · шаг 2 из 3</h3><p>Придумайте новый пароль.</p><p class="tiny" style="font-size:12px;color:#8e8e93">⚠️ Новый пароль не должен совпадать со старым паролем «qwerty123», а также с паролями ваших соседей.</p><input class="inp" type="password" data-t="np1" placeholder="Новый пароль" style="margin-bottom:8px"><input class="inp" type="password" data-t="np2" placeholder="Повторите"><div class="err" id="e"></div><button class="btn w" data-t="npsave" style="margin-top:12px">Сохранить</button><button class="btn w gr" data-t="x">Отмена</button>`;
+      s.querySelector('[data-t=x]').onclick=s.close;
+      s.querySelector('[data-t=npsave]').onclick=()=>{
+        const a=s.querySelector('[data-t=np1]').value,b=s.querySelector('[data-t=np2]').value;
+        if(!a||a!==b){s.querySelector('#e').textContent='Пароли не совпадают';return}
+        if(a==='qwerty123'){s.querySelector('#e').textContent='Новый пароль совпадает со старым!';return}
+        newPass=a;
+        s.querySelector('.sh').innerHTML=`<h3>Сброс пароля · шаг 3 из 3</h3><p>Почти готово! Чтобы новый пароль вступил в силу, перейдите по ссылке из письма. До этого действует старый пароль.</p><button class="btn w" data-t="x">Хорошо</button>`;
+        s.querySelector('[data-t=x]').onclick=s.close;
+        api.push('📧 Почта','UX·ID: подтвердите смену пароля. Ссылка действительна 0 минут. <u>Ссылка истекла</u>.',1200);
+      };
+    };
+  };
+  q('[data-t=enter]').onclick=()=>{
+    const l=q('[data-t=login]').value.trim().toLowerCase(),p=q('[data-t=pass]').value;
+    if(l==='player_one'&&p==='qwerty123')return api.win();
+    if(l==='player_one'&&newPass&&p===newPass)return api.fail('Новый пароль ещё не подтверждён. Подтверждать его некуда. Значит, действует… какой?');
+    api.fail('Неверный логин или пароль. Что именно неверно — секрет.');
+  };
+}});
+
+/* 2. ПЕЧЕНЬКИ */
+LV({id:'cookies',name:'Печеньки 2.0',
+task:'Откажись от <b>всех</b> необязательных cookie, отслеживания и «законных интересов», чтобы прочитать новость.',
+hints:['Сначала найди настройки — они не в тексте, а в углу баннера. Внутри прочитай <b>легенду</b> над переключателями. А ещё одна подпись хитрая: в ней отрицание.',
+'Шестерёнка ⚙ в углу баннера. По легенде этого сайта <b>серый = включено, зелёный = выключено</b>. Сделай зелёными: Аналитику, Рекламу, Персонализацию, Соцсети. Переключатель «<b>Не</b> делиться данными с партнёрами» сделай <b>серым</b> (включи). Раскрой «Законный интерес» и нажми «Возразить всем». Потом мелкая кнопка «Подтвердить мой выбор».'],
+css:`.l2s .hd{background:#b80c2f;color:#fff;padding:12px 16px;font:900 20px Georgia,serif}.l2s .fp{height:12px;background:#ececec;border-radius:6px;margin:12px 16px}.l2s h2{font:700 22px Georgia,serif;margin:16px}
+.l2b{position:absolute;inset:0;background:#0007;display:flex;align-items:center;justify-content:center;padding:14px}.l2b .in{background:#fff;border-radius:12px;padding:18px;max-width:440px;position:relative}.l2b h3{margin:0 0 8px;font-size:18px;padding-right:30px}.l2b p{font-size:13px;color:#6e6e73;margin:0 0 14px}.l2gear{position:absolute;top:10px;right:12px;font-size:16px;color:#d0d0d5;border:none;background:none;padding:4px}
+.l2leg{background:#f2f2f7;border-radius:10px;padding:10px;font-size:13px;margin-bottom:8px}.l2row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid #eee}.l2row small{display:block;color:#8e8e93;font-size:12px}
+.l2tg{width:52px;height:32px;border-radius:16px;background:#c7c7cc;position:relative;flex:none;border:none;padding:0}.l2tg::after{content:"";position:absolute;top:2px;left:2px;width:28px;height:28px;border-radius:50%;background:#fff;transition:left .2s;box-shadow:0 2px 4px #0003}.l2tg.off{background:#34c759}.l2tg.off::after{left:22px}.l2tg:disabled{opacity:.5}
+.l2acc{width:100%;text-align:left;border:none;background:#f2f2f7;border-radius:8px;padding:12px;margin-top:12px;font-size:15px}`,
+render(V,api){
+  V.innerHTML=`<div class="l2s"><div class="hd">ПРАВДА.онлайн</div><h2>Учёные выяснили, почему все сайты такие неудобные</h2>${'<div class="fp"></div>'.repeat(14)}</div>`;
+  const B=h(`<div class="l2b" data-t="banner"><div class="in"><button class="l2gear" data-t="gear">⚙</button>
+    <h3>Мы и 1 284 наших партнёра ❤️ ваши данные</h3>
+    <p>Мы храним и/или получаем доступ к информации на устройстве, чтобы показывать персонализированную рекламу, измерять её эффективность и узнавать, о чём вы думаете. Нажимая «Принять», вы соглашаетесь. Не нажимая — тоже.</p>
+    <button class="btn g w" data-t="acc1">Принять все</button><button class="btn w" data-t="acc2">Принять выбранное</button></div></div>`);
+  V.appendChild(B);
+  const acc=()=>api.fail('Поздравляем! 1 284 партнёра теперь знают ваш размер обуви.');
+  B.querySelector('[data-t=acc1]').onclick=acc;B.querySelector('[data-t=acc2]').onclick=acc;
+  B.querySelector('[data-t=gear]').onclick=()=>{
+    const T=[{id:'an',l:'Аналитика',s:'Считаем ваши клики и вздохи',on:true,want:false},{id:'ad',l:'Реклама',s:'Реклама, которая знает вас лучше мамы',on:true,want:false},{id:'pers',l:'Персонализация',s:'Подбираем новости под ваше настроение',on:true,want:false},{id:'soc',l:'Соцсети',s:'Кнопки «поделиться», которые делятся сами',on:true,want:false},{id:'share',l:'Не делиться данными с партнёрами',s:'Партнёры будут грустить',on:false,want:true}];
+    const VEN=['АдТех Галактика','Пиксель Слежка','Кукистан','БигДата-Бро','Ретаргет 3000'];
+    const st={},obj={};
+    const s=api.sheet(`<h3>Параметры конфиденциальности</h3>
+      <div class="l2leg">Обозначения (брендбук 2026): <b style="color:#34c759">● зелёный</b> — отключено, <b style="color:#8e8e93">● серый</b> — включено.</div>
+      <div class="l2row"><div>Строго необходимые<small>Всегда активны</small></div><button class="l2tg" disabled></button></div>
+      <div id="tgs"></div>
+      <button class="l2acc" data-t="li">▸ Законный интерес (5 партнёров)</button><div id="ven" style="display:none"></div>
+      <button class="btn g w" data-t="saveall" style="margin-top:16px">Сохранить и принять все</button>
+      <div style="text-align:center;margin-top:10px"><button class="btn tb" data-t="confirm">подтвердить мой выбор</button></div>`);
+    const tg=s.querySelector('#tgs');
+    T.forEach(t=>{st[t.id]=t.on;const r=h(`<div class="l2row"><div>${t.l}<small>${t.s}</small></div><button class="l2tg ${t.on?'':'off'}" data-t="tg-${t.id}"></button></div>`);
+      const b=r.querySelector('button');b.onclick=()=>{st[t.id]=!st[t.id];b.classList.toggle('off',!st[t.id])};tg.appendChild(r)});
+    const ven=s.querySelector('#ven');
+    VEN.forEach((v,i)=>{obj[i]=false;const r=h(`<label class="cb" style="border-bottom:1px solid #eee"><input type="checkbox" data-t="v${i}"> <span>${v}<br><span class="tiny">Законный интерес: «очень хочется»</span></span><span style="margin-left:auto;font-size:13px;color:#8e8e93">Возразить</span></label>`);r.querySelector('input').onchange=e=>obj[i]=e.target.checked;ven.appendChild(r)});
+    const all=h(`<button class="btn gr w" data-t="objall" style="margin-top:8px">Возразить всем</button>`);all.onclick=()=>{ven.querySelectorAll('input').forEach((c,i)=>{c.checked=true;obj[i]=true})};ven.appendChild(all);
+    s.querySelector('[data-t=li]').onclick=e=>{const o=ven.style.display==='none';ven.style.display=o?'block':'none';e.target.textContent=(o?'▾':'▸')+' Законный интерес (5 партнёров)'};
+    s.querySelector('[data-t=saveall]').onclick=()=>{s.close();acc()};
+    s.querySelector('[data-t=confirm]').onclick=()=>{
+      const bad=T.filter(t=>st[t.id]!==t.want).length+Object.values(obj).filter(x=>!x).length;
+      if(!bad){s.close();B.remove();api.win()}
+      else api.fail(`Сохранено! Но вас всё ещё отслеживают по ${bad} пункт${bad===1?'у':'ам'}. Цвета здесь значат не то, что вы думаете?`);
+    };
+  };
+}});
+
+/* 3. КАПЧА 2.0 */
+LV({id:'captcha',name:'Капча-загадка',
+task:'Пройди 4 проверки и докажи, что ты <b>не робот</b>. Роботы, говорят, плохо читают.',
+hints:['Каждую фразу читай дословно. Порядок действий, все буквы (даже в кавычках), «НЕТ» в задании и время — без таймера, считай в уме.',
+'1) 2+2×2 = <b>6</b>. 2) Букв «о» в предложении — <b>8</b> (считая ту, что в кавычках). 3) Выбери то, что НЕ животное: 🍎 🚗 🌵 🍄 ⚽ (бабочка, пчела, улитка и рыба — животные). 4) Досчитай про себя до 8–10 и нажми кнопку.'],
+css:`.l3{padding:18px;max-width:460px;margin:0 auto}.l3h{background:#4a90e2;color:#fff;padding:14px 16px;border-radius:10px 10px 0 0;font-size:15px}.l3h b{font-size:20px;display:block;margin-top:2px}.l3b{border:1px solid #d9d9d9;border-top:none;border-radius:0 0 10px 10px;padding:16px}.l3g{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}.l3c{aspect-ratio:1;font-size:clamp(36px,9vw,56px);border:none;background:#eee;display:flex;align-items:center;justify-content:center;position:relative}.l3c.on{outline:4px solid #4a90e2;outline-offset:-4px;background:#dce9fb}.l3c.on::after{content:"✓";position:absolute;top:4px;left:6px;font-size:16px;color:#fff;background:#4a90e2;border-radius:50%;width:22px;height:22px;line-height:22px;text-align:center}.l3p{display:flex;gap:6px;margin:10px 0}.l3p span{flex:1;height:6px;border-radius:3px;background:#e5e5ea}.l3p span.on{background:#4a90e2}`,
+render(V,api){
+  const S2='Сдвиньте ползунок на число, равное количеству букв «о» в этом предложении.';
+  const nO=(S2.match(/[оО]/g)||[]).length;
+  let stage=0;
+  const frame=(title,body)=>{V.innerHTML=`<div class="l3"><div class="l3p">${[0,1,2,3].map(i=>`<span class="${i<=stage?'on':''}"></span>`).join('')}</div><div class="l3h">Проверка ${stage+1} из 4<b>${title}</b></div><div class="l3b">${body}</div></div>`};
+  const next=()=>{stage++;[s1,s2,s3,s4][stage]()};
+  function s1(){frame('Сколько будет: два плюс два умножить на два?',`<input class="inp" data-t="c1" inputmode="numeric" placeholder="Ответ"><button class="btn w" data-t="c1ok" style="margin-top:10px">Проверить</button>`);
+    V.querySelector('[data-t=c1ok]').onclick=()=>{const v=V.querySelector('[data-t=c1]').value.trim();if(v==='6')next();else api.fail(v==='8'?'8? Роботы тоже не знают порядок действий.':'Неверно. Роботы ошибаются именно так.')}}
+  function s2(){frame(S2,`<input type="range" min="0" max="15" value="0" data-t="c2" style="width:100%;height:34px"><div style="text-align:center;font-size:28px;font-weight:800" id="v">0</div><button class="btn w" data-t="c2ok" style="margin-top:6px">Проверить</button>`);
+    const r=V.querySelector('[data-t=c2]');r.oninput=()=>V.querySelector('#v').textContent=r.value;
+    V.querySelector('[data-t=c2ok]').onclick=()=>{if(+r.value===nO)next();else api.fail(+r.value===nO-1?'Почти! Перечитайте предложение. Всё предложение.':'Неверно. Пересчитайте буквы «о».')}}
+  function s3(){const items=['🐟','🍎','🦋','🚗','🌵','🐌','🍄','⚽','🐝'];const ok=new Set(['🍎','🚗','🌵','🍄','⚽']);const sel=new Set();
+    frame('Выберите все изображения, на которых НЕТ животных',`<div class="l3g">${items.map((e,i)=>`<button class="l3c" data-t="g${i}" data-e="${e}">${e}</button>`).join('')}</div><button class="btn w" data-t="c3ok" style="margin-top:12px">ПОДТВЕРДИТЬ</button>`);
+    V.querySelectorAll('.l3c').forEach(b=>b.onclick=()=>{const e=b.dataset.e;sel.has(e)?sel.delete(e):sel.add(e);b.classList.toggle('on')});
+    V.querySelector('[data-t=c3ok]').onclick=()=>{const wrongAnimal=[...sel].find(e=>!ok.has(e));
+      if(wrongAnimal)return api.fail(`${wrongAnimal} — это животное. Да-да, тоже.`);
+      if(sel.size<ok.size)return api.fail('Вы выбрали не всё, на чём нет животных. Грибы и кактусы — не животные.');
+      next()}}
+  function s4(){frame('Нажмите «Я не робот» не раньше, чем через 7 секунд после появления этого текста, и не позже, чем через 12.',`<p class="tiny">Таймера нет. Роботам он бы помог.</p><button class="btn w" data-t="c4" style="padding:18px">🤖 ✗ Я не робот</button>`);
+    let start=Date.now();
+    V.querySelector('[data-t=c4]').onclick=()=>{const dt=(Date.now()-start)/1000;
+      if(dt<7){api.fail(`Слишком быстро (${dt.toFixed(1)} с). Так торопятся только роботы. Время пошло заново.`);start=Date.now();return}
+      if(dt>12){api.fail(`Слишком медленно (${dt.toFixed(1)} с). Вы что, уснули? Время пошло заново.`);start=Date.now();return}
+      V.querySelector('.l3b').innerHTML='<div style="text-align:center;padding:20px;font-size:40px">✅</div>';api.later(api.win,500)}}
+  s1();
+}});
+
+/* 4. ТЕСТ ДЛЯ КАНДИДАТОВ */
+LV({id:'quiz',name:'Тест для кандидатов',
+task:'Пройди отборочный тест в компанию «КривоСофт». Вопросы с подвохом — как и вся компания.',
+hints:['Читай вопрос, а не ответы. Иногда важен не смысл ответа, а его вид. И запоминай, сколько вопросов уже было.',
+'Ответы: 12 · «Зелёный» (цвет текста вопроса) · 2-е · «Один раз» · самая большая по размеру кнопка · «Нет» (не хотеть не продолжать = хотеть продолжать) · 7.'],
+css:`.l4{padding:20px;max-width:480px;margin:0 auto}.l4n{color:#8e8e93;font-size:13px;margin-bottom:8px}.l4q{font-size:21px;font-weight:700;margin-bottom:16px;line-height:1.3}.l4o{display:flex;flex-direction:column;gap:10px}.l4o button{border:1.5px solid #d1d1d6;background:#fff;border-radius:12px;padding:14px;font-size:17px;text-align:left;color:#1c1c1e}.l4big{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:center}.l4big button{border:1.5px solid #d1d1d6;background:#f7f7fa;border-radius:12px;color:#1c1c1e}`,
+render(V,api){
+  const Q=[
+    {q:'Сколько месяцев в году имеют 28 дней?',o:['1','2','12','Зависит от года'],a:2},
+    {q:'Какого цвета текст этого вопроса?',style:'color:#1fa34a',o:[['Красный','#1fa34a'],['Зелёный','#e0303a'],['Синий','#f08c00'],['Оранжевый','#1d6fe0']],a:1},
+    {q:'Вы на забеге обогнали бегуна, который был вторым. На каком вы теперь месте?',o:['1-е','2-е','3-е','Зависит от погоды'],a:1},
+    {q:'Сколько раз можно вычесть 5 из 25?',o:['5 раз','Один раз','Бесконечно','Ни разу'],a:1},
+    {q:'Нажмите на самую большую кнопку.',big:true},
+    {q:'Нажмите «Нет», если вы НЕ хотите НЕ продолжать тест.',o:['Да','Нет'],a:1},
+    {q:'Сколько вопросов было в этом тесте, включая этот?',o:['5','6','7','8'],a:2}];
+  let i=0;
+  const msgs=['Неверно. Резюме отправлено в корзину.','Нет. Подумайте ещё. Мы подождём (недолго).','Мимо. HR уже пишет отказ.','Неправильно. Но вы держитесь.'];
+  function show(){const x=Q[i];
+    V.innerHTML=`<div class="l4"><div class="l4n">Вопрос ${i+1}</div><div class="l4q" style="${x.style||''}">${x.q}</div><div class="${x.big?'l4big':'l4o'}" id="o"></div></div>`;
+    const o=V.querySelector('#o');
+    if(x.big){
+      const B=[['САМАЯ БОЛЬШАЯ','font-size:13px;padding:8px 10px',0],['1 000 000','font-size:13px;padding:8px 10px',0],['XXL','font-size:16px;padding:12px 16px',0],['·','font-size:14px;width:150px;height:120px',1],['Больше всех!','font-size:15px;padding:10px 12px',0]];
+      B.forEach(([t,st,ok],k)=>{const b=h(`<button style="${st}" data-t="o${k}">${t}</button>`);b.onclick=()=>ok?ok_():api.fail('Это не самая большая кнопка. Не верьте надписям.');o.appendChild(b)});
+      return}
+    x.o.forEach((t,k)=>{const lab=Array.isArray(t)?t[0]:t,col=Array.isArray(t)?`style="color:${t[1]};font-weight:700"`:'';
+      const b=h(`<button ${col} data-t="o${k}">${lab}</button>`);b.onclick=()=>k===x.a?ok_():api.fail(msgs[rnd(0,msgs.length-1)]);o.appendChild(b)});
+  }
+  function ok_(){i++;if(i>=Q.length)api.win();else show()}
+  show();
+}});
+
+/* 5. КАЛЬКУЛЯТОР */
+LV({id:'calc',name:'Сломанный калькулятор',
+task:'Получи на экране калькулятора результат <b>2026</b>.<small>Клавиши 2 и 0 сломаны. А некоторые целые — работают… по-своему.</small>',
+hints:['Посмотри, какой знак появляется на экране, когда жмёшь клавиши действий. Надписи на клавишах могут врать. Калькулятор считает по порядку, без приоритета умножения.',
+'Клавиши «+» и «×» перепутаны: «+» умножает, «×» складывает. Пример: 45 [+] 45 = 2025, потом [×] 1 = 2026. Или 1987 [×] 39 [=].'],
+css:`.l5{padding:18px;display:flex;justify-content:center}.l5c{background:#1c1c1e;border-radius:28px;padding:18px;width:min(100%,340px)}.l5d{color:#fff;text-align:right;font:300 46px -apple-system,sans-serif;min-height:60px;overflow:hidden;white-space:nowrap}.l5e{color:#8e8e93;text-align:right;font-size:16px;min-height:22px}.l5k{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px}.l5k button{aspect-ratio:1;border-radius:50%;border:none;font-size:28px;background:#333;color:#fff}.l5k button.op{background:#ff9f0a}.l5k button.fn{background:#a5a5a5;color:#000}.l5k button.br{background:#2a2a2a;color:#555;text-decoration:line-through}`,
+render(V,api){
+  V.innerHTML=`<div class="l5"><div class="l5c"><div class="l5e" id="e"></div><div class="l5d" id="d">0</div><div class="l5k" id="k"></div></div></div>`;
+  const keys=[['C','fn','C'],['±','fn','neg'],['%','fn','pct'],['÷','op','/'],['7','','7'],['8','','8'],['9','','9'],['×','op','+'],['4','','4'],['5','','5'],['6','','6'],['−','op','-'],['1','','1'],['2','br',''],['3','','3'],['+','op','*'],['0','br',''],['.','','.'],['⌫','fn','bs'],['=','op','=']];
+  let acc=null,curS='',op=null;const D=V.querySelector('#d'),E=V.querySelector('#e');
+  const sym={'+':'+','-':'−','*':'×','/':'÷'};
+  const ap=(a,o,b)=>o==='+'?a+b:o==='-'?a-b:o==='*'?a*b:b===0?NaN:a/b;
+  const show=v=>{let s=Number.isFinite(v)?String(+v.toFixed(8)):'Ошибка';D.textContent=s};
+  keys.forEach(([l,c,v],idx)=>{const b=h(`<button class="${c}" data-t="k${idx}" data-k="${l}">${l}</button>`);b.onclick=()=>press(v,c);V.querySelector('#k').appendChild(b)});
+  function press(v,c){
+    if(c==='br')return api.toast('Клавиша сломана. Гарантия закончилась вчера.');
+    if(/^[0-9.]$/.test(v)){if(curS.length>=9)return;if(v==='.'&&curS.includes('.'))return;curS+=v;D.textContent=curS;return}
+    if(v==='C'){acc=null;curS='';op=null;D.textContent='0';E.textContent='';return}
+    if(v==='bs'){curS=curS.slice(0,-1);D.textContent=curS||'0';return}
+    if(v==='neg'){if(curS){curS=curS.startsWith('-')?curS.slice(1):'-'+curS;D.textContent=curS}return}
+    if(v==='pct'){if(curS){curS=String(+curS/100);D.textContent=curS}return}
+    const num=curS===''?null:parseFloat(curS);
+    if(v==='='){if(op&&num!==null){const r=ap(acc,op,num);E.textContent=`${fmtN(acc)} ${sym[op]} ${fmtN(num)} =`;acc=r;op=null;curS='';show(r);if(Math.abs(r-2026)<1e-9)api.later(api.win,600)}return}
+    if(num!==null){acc=acc===null||op===null?num:ap(acc,op,num);curS=''}
+    if(acc===null)return;
+    op=v;E.textContent=`${fmtN(acc)} ${sym[op]}`;show(acc);
+    if(Math.abs(acc-2026)<1e-9)api.toast('Почти! Нажмите «=», чтобы получить результат.');
+  }
+  const fmtN=n=>String(+(+n).toFixed(8));
+}});
+
+/* 6. ПАРОЛЬ 2.0 */
+LV({id:'password',name:'Надёжный пароль',
+task:'Придумай пароль, который устроит систему. Требования появляются по мере ввода и <b>влияют друг на друга</b>.',
+hints:['Начни с планеты — и подумай, на какую букву она начинается: первая и последняя буква пароля должны совпасть. Ответ на 7×8 тоже содержит цифры, они идут в общую сумму.',
+'Пример: <b>Марс56!77?м</b> — 11 символов (простое число), цифры 5+6+7+7=25 (ровно 4 цифры), есть «56», заглавная М, «!», планета, первая и последняя буквы — М/м. Если скажут, что пароль занят, — поменяй местами, например <b>Марс56?77!м</b>.'],
+css:`.l6{max-width:460px;margin:0 auto;padding:22px 18px}.l6 .f{display:flex;gap:6px;margin:12px 0 6px}.l6 .f .inp{flex:1;min-width:0}.l6 .eye{border:1.5px solid #d1d1d6;background:#f7f7f7;border-radius:10px;width:56px;font-size:22px}.l6r{padding:9px 12px;border-radius:8px;margin:6px 0;font-size:14px;animation:l6p .25s}.l6r.ok{background:#e4f7ea;color:#1b7a3d}.l6r.no{background:#fde7ea;color:#a3142f}@keyframes l6p{from{transform:scale(.92);opacity:0}}.l6cnt{font-size:12px;color:#8e8e93;text-align:right}`,
+render(V,api){
+  const planets=/(меркурий|венер|земл|марс|юпитер|сатурн|уран|нептун|mercury|venus|earth|mars|jupiter|saturn|uranus|neptune)/i;
+  const prime=n=>{if(n<2)return false;for(let i=2;i*i<=n;i++)if(n%i===0)return false;return true};
+  const digits=p=>(p.match(/\d/g)||[]);
+  const R=[['Минимум 8 символов',p=>p.length>=8],['Хотя бы одна цифра',p=>/\d/.test(p)],['Хотя бы одна заглавная буква',p=>/[A-ZА-ЯЁ]/.test(p)],['Хотя бы один из символов: ! ? #',p=>/[!?#]/.test(p)],
+    ['Пароль должен содержать ответ на вопрос «7 × 8»',p=>p.includes('56')],['Сумма всех цифр должна быть равна 25',p=>digits(p).reduce((a,b)=>a+ +b,0)===25],['В пароле ровно 4 цифры',p=>digits(p).length===4],
+    ['Пароль должен содержать название планеты Солнечной системы',p=>planets.test(p)],['Пароль начинается и заканчивается одной и той же буквой (регистр не важен)',p=>{const a=p[0],b=p[p.length-1];return!!a&&/[a-zа-яё]/i.test(a)&&a.toLowerCase()===b.toLowerCase()}],
+    ['Длина пароля — простое число',p=>prime(p.length)],['Не длиннее 17 символов. Мы не резиновые',p=>p.length<=17]];
+  V.innerHTML=`<div class="l6"><h2 style="margin:0">Создание аккаунта</h2><div class="muted" style="font-size:14px">Шаг 2 из 2 · Безопасность превыше всего 🔐</div>
+    <div class="f"><input class="inp" type="password" data-t="pw" placeholder="Пароль" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"><button class="eye" data-t="eye">👁</button></div>
+    <div class="l6cnt" id="cnt">0 символов</div><div class="tiny">Удерживайте 👁, чтобы увидеть пароль</div>
+    <div id="rules"></div>
+    <input class="inp" type="password" data-t="pw2" placeholder="Повторите пароль" style="margin-top:12px" autocomplete="off" autocapitalize="off">
+    <button class="btn w" data-t="go" disabled style="margin-top:12px">Зарегистрироваться</button></div>`;
+  const pw=V.querySelector('[data-t=pw]'),pw2=V.querySelector('[data-t=pw2]'),go=V.querySelector('[data-t=go]'),eye=V.querySelector('[data-t=eye]'),rules=V.querySelector('#rules');
+  let shown=1,taken=null;
+  const show=v=>pw.type=v?'text':'password';
+  eye.addEventListener('pointerdown',e=>{e.preventDefault();show(true)});['pointerup','pointerleave','pointercancel'].forEach(ev=>eye.addEventListener(ev,()=>show(false)));eye.oncontextmenu=e=>e.preventDefault();
+  pw2.addEventListener('paste',e=>{e.preventDefault();api.toast('Вставка запрещена в целях безопасности. Вводите руками, как в 1999.')});
+  function check(){const p=pw.value;V.querySelector('#cnt').textContent=p.length+' символов';
+    if(!p){rules.innerHTML='';go.disabled=true;return}
+    const fb=R.findIndex(r=>!r[1](p));shown=Math.max(shown,fb===-1?R.length:fb+1);
+    let html='',all=shown===R.length;
+    for(let i=0;i<shown;i++){const ok=R[i][1](p);if(!ok)all=false;html=`<div class="l6r ${ok?'ok':'no'}">${ok?'✅':'❌'} Правило ${i+1}: ${R[i][0]}</div>`+html}
+    rules.innerHTML=html;go.disabled=!(all&&pw2.value===p)}
+  pw.addEventListener('input',check);pw2.addEventListener('input',check);
+  go.onclick=()=>{const p=pw.value;
+    if(taken===null){taken=p;api.fail('Этот пароль уже используется пользователем <b>vasya_1987</b> 🙃 Придумайте другой (правила те же).');pw2.value='';check();return}
+    if(p===taken){api.fail('Это всё ещё пароль vasya_1987. Он просил не трогать.');return}
+    api.win()};
+}});
+
+/* ===================== МИР 2: ШОПИНГ ===================== */
+
+/* 7. КИНОТЕАТР */
+LV({id:'cinema',name:'Кинотеатр',
+task:'Купи 2 билета <b>рядом</b> (без прохода между ними) на «Кот в сапогах 3» <b>в 19:30, на русском</b>, в <b>5-й ряд</b>. Места — самые дешёвые из возможных. Никаких допов.',
+hints:['Время тут в американском формате. Ряды обозначены буквами, а экран — внизу. Места нумеруются справа налево, и между блоками есть проходы. Проверь чек целиком, даже свёрнутое.',
+'Фильм без пометки «оригинал», сеанс <b>07:30 PM</b>. 5-й ряд — буква <b>Д</b>. Боковые места дешевле (250 ₽). Свободная пара без прохода в боковом блоке — места <b>10 и 11</b>. В оформлении сними попкорн, страховку и раскрой «Ещё 1 услуга» — сними подписку.'],
+css:`.l7 .film{border-bottom:1px solid #eee;padding:14px 16px}.l7 .film h4{margin:0 0 3px;font-size:17px}.l7 .ss{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}.l7 .ss button{border:1.5px solid #d1d1d6;background:#fff;border-radius:8px;padding:8px 10px;font-size:15px;color:#1c1c1e}
+.l7h{padding:12px 8px;overflow-x:auto}.l7row{display:flex;align-items:center;gap:3px;justify-content:center;margin:4px 0}.l7row .lt{width:22px;text-align:center;font-weight:700;color:#8e8e93;font-size:13px}.l7s{width:24px;height:26px;border-radius:6px 6px 3px 3px;border:1.5px solid #c7c7cc;background:#fff;font-size:9px;color:#8e8e93;padding:0;flex:none}.l7s.oc{background:#34c759;border-color:#34c759;color:#fff}.l7s.sel{background:#007aff;border-color:#007aff;color:#fff}.l7gap{width:14px;flex:none}.l7scr{margin:16px auto 4px;width:80%;height:8px;border-radius:50%;background:linear-gradient(#9ac,#fff);text-align:center}.l7leg{display:flex;gap:12px;justify-content:center;font-size:12px;color:#6e6e73;flex-wrap:wrap;margin:6px 10px}.l7leg i{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-1px;margin-right:4px;border:1.5px solid #c7c7cc}`,
+render(V,api){
+  const FILMS=[{t:'Кот в сапогах 3',d:'6+ · Анимация · 1 ч 38 мин',s:['07:30 AM','11:15 AM','07:30 PM','09:45 PM']},{t:'Кот в сапогах 3 (оригинал, рус. субтитры)',d:'6+ · English',s:['07:30 PM','10:00 PM']},{t:'Котлован',d:'18+ · Драма · 3 ч 20 мин',s:['07:30 PM']}];
+  const ROWS='АБВГДЕЖЗ';
+  const OCC=[[2,5,6,7,11],[1,4,5,6,9,10],[3,4,7,8,12],[5,6,7,9,10,11],[1,3,5,8,12],[2,4,6,7,10],[1,2,3,8,9],[5,6,11]];
+  const price=n=>(n<=3||n>=10)?250:400;
+  let film,sess,sel=new Set(),row=null;
+  afisha();
+  function afisha(){sel=new Set();row=null;
+    V.innerHTML=`<div class="l7"><div class="ah">🎬 КиноКривой · Афиша на сегодня</div>${FILMS.map((f,fi)=>`<div class="film"><h4>${f.t}</h4><div class="muted" style="font-size:13px">${f.d}</div><div class="ss">${f.s.map((s,si)=>`<button data-t="s${fi}-${si}" data-f="${fi}" data-s="${si}">${s}</button>`).join('')}</div></div>`).join('')}</div>`;
+    V.querySelectorAll('.ss button').forEach(b=>b.onclick=()=>{film=+b.dataset.f;sess=+b.dataset.s;hall()})}
+  function hall(){
+    V.innerHTML=`<div class="l7"><div class="ah"><button class="btn ghost" data-t="back">‹</button>Зал 3 · ${FILMS[film].s[sess]}</div>
+    <div class="l7leg"><span><i style="background:#34c759;border-color:#34c759"></i>занято</span><span><i></i>свободно</span><span><i style="background:#007aff;border-color:#007aff"></i>выбрано</span></div>
+    <div class="tiny" style="text-align:center;font-size:12px">Боковые блоки (места 1–3 и 10–12) — 250 ₽ · центр (4–9) — 400 ₽</div>
+    <div class="l7h" id="hall"></div><div style="text-align:center;font-size:12px;color:#8e8e93">ЭКРАН</div><div class="l7scr"></div>
+    <div class="p16"><div id="selinfo" class="muted" style="min-height:22px;font-size:14px"></div><button class="btn w" data-t="cont">Продолжить</button></div></div>`;
+    V.querySelector('[data-t=back]').onclick=afisha;
+    const H=V.querySelector('#hall');
+    ROWS.split('').forEach((L,ri)=>{const r=h(`<div class="l7row"></div>`);
+      for(let n=12;n>=1;n--){const oc=OCC[ri].includes(n);const b=h(`<button class="l7s ${oc?'oc':''}" data-t="seat-${L}-${n}">${n}</button>`);
+        b.onclick=()=>{if(oc)return api.toast('Место занято. Зелёный — значит занято, вы же видели легенду?');
+          if(row!==null&&row!==ri&&sel.size){sel.clear();H.querySelectorAll('.sel').forEach(x=>x.classList.remove('sel'))}
+          row=ri;const k=n;sel.has(k)?sel.delete(k):sel.add(k);b.classList.toggle('sel');info()};
+        r.appendChild(b);if(n===10||n===4)r.appendChild(h('<span class="l7gap"></span>'))}
+      r.appendChild(h(`<span class="lt">${L}</span>`));H.appendChild(r)});
+    const info=()=>{V.querySelector('#selinfo').textContent=sel.size?`Ряд ${ROWS[row]}, места ${[...sel].sort((a,b)=>a-b).join(', ')} · ${rub([...sel].reduce((a,n)=>a+price(n),0))}`:''};
+    V.querySelector('[data-t=cont]').onclick=()=>{if(sel.size!==2)return api.toast('Выберите ровно 2 места');checkout()};
+  }
+  function checkout(){
+    const tickets=[...sel].reduce((a,n)=>a+price(n),0);
+    const EX=[{id:'pop',t:'Попкорн XL + кола',p:590,on:true},{id:'ins',t:'Страховка от скучного фильма',p:99,on:true},{id:'sub',t:'Подписка «Кино+» (299 ₽/мес, первый месяц — 1 ₽)',p:1,on:true,hidden:true}];
+    V.innerHTML=`<div class="l7"><div class="ah"><button class="btn ghost" data-t="back">‹</button>Оформление</div><div class="p16">
+      <div class="row" style="justify-content:space-between"><span>Билеты × 2</span><b>${rub(tickets)}</b></div><hr class="s">
+      ${EX.filter(e=>!e.hidden).map(e=>`<label class="cb"><input type="checkbox" data-t="ex-${e.id}" ${e.on?'checked':''}><span style="flex:1">${e.t}</span><b>${rub(e.p)}</b></label>`).join('')}
+      <button class="btn ghost" data-t="more" style="padding-left:0">▸ Ещё 1 услуга</button><div id="more" style="display:none">${EX.filter(e=>e.hidden).map(e=>`<label class="cb"><input type="checkbox" data-t="ex-${e.id}" checked><span style="flex:1">${e.t}</span><b>${rub(e.p)}</b></label>`).join('')}</div>
+      <hr class="s"><div class="row" style="justify-content:space-between;font-size:20px"><span>Итого</span><b id="tot"></b></div>
+      <button class="btn g w" data-t="pay" style="margin-top:14px">Оплатить</button></div></div>`;
+    V.querySelector('[data-t=back]').onclick=hall;
+    V.querySelector('[data-t=more]').onclick=e=>{const m=V.querySelector('#more');m.style.display=m.style.display==='none'?'block':'none'};
+    const tot=()=>{let t=tickets;EX.forEach(e=>{if(V.querySelector(`[data-t=ex-${e.id}]`).checked)t+=e.p});V.querySelector('#tot').textContent=rub(t)};
+    V.querySelectorAll('input').forEach(i=>i.onchange=tot);tot();
+    V.querySelector('[data-t=pay]').onclick=()=>{
+      const s=[...sel].sort((a,b)=>a-b);
+      if(film!==0||sess!==2){api.fail('Билеты куплены… но не на тот сеанс. Проверь язык и что такое AM/PM.');return afisha()}
+      if(row!==4){api.fail(`Вы купили места в ряду «${ROWS[row]}». Это не 5-й ряд. Как тут считают ряды?`);return afisha()}
+      if(s[1]-s[0]!==1||(s[0]===3)||(s[0]===9)){api.fail('Места не рядом: между ними проход или кресла.');return afisha()}
+      if(tickets>500){api.fail(`Билеты за ${rub(tickets)}. Можно было дешевле — вспомни про боковые блоки.`);return afisha()}
+      if(EX.some(e=>V.querySelector(`[data-t=ex-${e.id}]`).checked)){api.fail('К билетам прицепились допы. Проверь чек полностью, даже свёрнутое.');return}
+      api.win()};
+  }
+}});
+
+/* 8. ДОСТАВКА ЕДЫ */
+LV({id:'food',name:'Доставка пиццы',
+task:'Закажи одну пиццу «Маргарита» <b>30 см</b>. Итого к оплате должно быть <b>ровно столько, сколько стоит сама пицца</b>. Ничего лишнего.',
+hints:['Размеры здесь в дюймах (1″ ≈ 2,5 см). Лишнее из корзины удаляется как на iPhone — через «Изменить». А в оформлении каждая строчка чека — это отдельная ловушка.',
+'Выбери <b>12″</b> (650 ₽). В корзине «Изменить» → красный ⊖ → «Удалить» для соусов и колы. Доставка «Ко времени» (0 ₽), оплата «Наличными» (нет сервисного сбора), чаевые «Другая» → 0, сними галочку экоупаковки. Итого 650 ₽.'],
+css:`.l8 .pz{display:flex;gap:12px;padding:14px 16px;border-bottom:1px solid #eee}.l8 .pz .e{font-size:54px}.l8 .ci{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid #eee}.l8 .mi{width:26px;height:26px;border-radius:50%;background:#ff3b30;color:#fff;border:none;font-weight:900;flex:none;padding:0}.l8 .st{display:flex;align-items:center;gap:6px}.l8 .st button{width:32px;height:32px;border-radius:8px;border:none;background:#f2f2f7;font-size:18px;padding:0}.l8 .del{background:#ff3b30;color:#fff;border:none;border-radius:8px;padding:8px 10px;font-weight:600}.l8 .sum div{display:flex;justify-content:space-between;padding:3px 0}`,
+render(V,api){
+  const P=[{id:'marg',t:'Маргарита',e:'🍕',p:[490,650,790]},{id:'pep',t:'Пепперони',e:'🍕',p:[590,750,890]},{id:'four',t:'Четыре сыра',e:'🧀',p:[520,690,850]}];
+  const SZ=['10″','12″','14″'];
+  let cart=[],extrasAdded=false,edit=false,delOpen=null;
+  let opt={del:'asap',pay:'card',tip:'15',tipOther:'',eco:true,time:'19:00–19:30'};
+  menu();
+  function menu(){
+    V.innerHTML=`<div class="l8"><div class="ah">🍕 ПиццаКрив<span class="sp"></span><button class="btn" data-t="cart" style="padding:9px 14px">Корзина (${cart.reduce((a,c)=>a+c.qty,0)})</button></div>
+    ${P.map((p,i)=>`<div class="pz"><div class="e">${p.e}</div><div style="flex:1"><b>${p.t}</b><div class="row" style="margin:8px 0;gap:6px">${SZ.map((s,si)=>`<button class="chip ${si===0?'on':''}" data-t="sz-${p.id}-${si}" data-p="${i}" data-s="${si}">${s}</button>`).join('')}</div><div class="row" style="justify-content:space-between"><b id="pr${i}">${rub(p.p[0])}</b><button class="btn o" data-t="add-${p.id}" data-p="${i}" style="padding:9px 14px">В корзину</button></div></div></div>`).join('')}
+    <div class="tiny" style="padding:12px 16px">″ — дюймы. Мы международная компания.</div></div>`;
+    const cs={};
+    V.querySelectorAll('.chip').forEach(c=>c.onclick=()=>{const i=+c.dataset.p;cs[i]=+c.dataset.s;V.querySelectorAll(`[data-p="${i}"].chip`).forEach(x=>x.classList.toggle('on',x===c));V.querySelector('#pr'+i).textContent=rub(P[i].p[cs[i]])});
+    V.querySelectorAll('[data-t^=add-]').forEach(b=>b.onclick=()=>{const i=+b.dataset.p,s=cs[i]||0;
+      const ex=cart.find(c=>c.id===P[i].id&&c.s===s);ex?ex.qty++:cart.push({id:P[i].id,t:`${P[i].t} ${SZ[s]}`,s,p:P[i].p[s],qty:1});
+      if(!extrasAdded){extrasAdded=true;cart.push({id:'sauce',t:'Соус чесночный',p:49,qty:2},{id:'cola',t:'Кола 1,5 л (акция!)',p:1,qty:1});api.toast('Мы добавили в заказ то, что вы забыли 😉')}
+      else api.toast('Добавлено');
+      V.querySelector('[data-t=cart]').textContent=`Корзина (${cart.reduce((a,c)=>a+c.qty,0)})`});
+    V.querySelector('[data-t=cart]').onclick=cartView;
+  }
+  function calc(){const goods=cart.reduce((a,c)=>a+c.p*c.qty,0);const del=opt.del==='asap'?199:0;const svc=opt.pay==='card'?49:0;const eco=opt.eco?20:0;
+    const tip=opt.tip==='other'?(Math.max(0,parseInt(opt.tipOther)||0)):Math.round(goods*(+opt.tip)/100);return{goods,del,svc,eco,tip,total:goods+del+svc+eco+tip}}
+  function cartView(){
+    const c=calc();
+    V.innerHTML=`<div class="l8"><div class="ah"><button class="btn ghost" data-t="tomenu">‹ Меню</button><span class="sp"></span>Корзина<span class="sp"></span><button class="btn ghost" data-t="edit">${edit?'Готово':'Изменить'}</button></div>
+    ${cart.length?cart.map((it,i)=>`<div class="ci">${edit?`<button class="mi" data-t="mi-${it.id}" data-i="${i}">−</button>`:''}<div style="flex:1">${it.t}<div class="muted" style="font-size:13px">${rub(it.p)}</div></div>${edit&&delOpen===i?`<button class="del" data-t="del-${it.id}" data-i="${i}">Удалить</button>`:`<div class="st"><button data-t="dec-${it.id}" data-i="${i}">−</button><b>${it.qty}</b><button data-t="inc-${it.id}" data-i="${i}">+</button></div>`}</div>`).join(''):'<div class="p16 muted">Корзина пуста</div>'}
+    <div class="p16">
+      <span class="lbl">Доставка</span>
+      <label class="cb"><input type="radio" name="del" value="asap" data-t="del-asap" ${opt.del==='asap'?'checked':''}> Как можно скорее — 199 ₽</label>
+      <label class="cb"><input type="radio" name="del" value="time" data-t="del-time" ${opt.del==='time'?'checked':''}> Ко времени — бесплатно</label>
+      ${opt.del==='time'?`<select class="inp" data-t="time"><option>19:00–19:30</option><option>19:30–20:00</option><option>через 3 дня, 03:00–03:30</option></select>`:''}
+      <span class="lbl">Оплата</span>
+      <label class="cb"><input type="radio" name="pay" value="card" data-t="pay-card" ${opt.pay==='card'?'checked':''}> Картой онлайн</label>
+      <label class="cb"><input type="radio" name="pay" value="cash" data-t="pay-cash" ${opt.pay==='cash'?'checked':''}> Наличными курьеру</label>
+      <div class="tiny">Сервисный сбор не взимается при оплате наличными.</div>
+      <span class="lbl">Чаевые курьеру</span>
+      <div class="row" style="flex-wrap:wrap;gap:6px">${['10','15','20'].map(t=>`<button class="chip ${opt.tip===t?'on':''}" data-t="tip-${t}" data-tip="${t}">${t}%</button>`).join('')}<button class="chip ${opt.tip==='other'?'on':''}" data-t="tip-other" data-tip="other">Другая</button></div>
+      ${opt.tip==='other'?`<input class="inp" data-t="tipv" inputmode="numeric" placeholder="Сумма, ₽" value="${opt.tipOther}" style="margin-top:8px">`:''}
+      <label class="cb" style="margin-top:10px"><input type="checkbox" data-t="eco" ${opt.eco?'checked':''}> Не отказываться от экоупаковки (+20 ₽)</label>
+      <hr class="s"><div class="sum" style="font-size:15px">
+      <div><span>Товары</span><span>${rub(c.goods)}</span></div><div><span>Доставка</span><span>${rub(c.del)}</span></div><div><span>Сервисный сбор</span><span>${rub(c.svc)}</span></div><div><span>Экоупаковка</span><span>${rub(c.eco)}</span></div><div><span>Чаевые</span><span id="stip">${rub(c.tip)}</span></div>
+      <div style="font-size:20px;font-weight:800;margin-top:6px"><span>Итого</span><span data-t="total">${rub(c.total)}</span></div></div>
+      <button class="btn g w" data-t="order" style="margin-top:14px">Заказать за ${rub(c.total)}</button></div></div>`;
+    const re=()=>cartView();
+    V.querySelector('[data-t=tomenu]').onclick=menu;
+    V.querySelector('[data-t=edit]').onclick=()=>{edit=!edit;delOpen=null;re()};
+    V.querySelectorAll('.mi').forEach(b=>b.onclick=()=>{delOpen=delOpen===+b.dataset.i?null:+b.dataset.i;re()});
+    V.querySelectorAll('.del').forEach(b=>b.onclick=()=>{cart.splice(+b.dataset.i,1);delOpen=null;re()});
+    V.querySelectorAll('[data-t^=dec-]').forEach(b=>b.onclick=()=>{const it=cart[+b.dataset.i];if(it.qty>1){it.qty--;re()}else api.toast('Минимум 1 шт. Как удалить? Как на iPhone.')});
+    V.querySelectorAll('[data-t^=inc-]').forEach(b=>b.onclick=()=>{cart[+b.dataset.i].qty++;re()});
+    V.querySelectorAll('input[name=del]').forEach(r=>r.onchange=()=>{opt.del=r.value;re()});
+    V.querySelectorAll('input[name=pay]').forEach(r=>r.onchange=()=>{opt.pay=r.value;re()});
+    V.querySelectorAll('[data-tip]').forEach(b=>b.onclick=()=>{opt.tip=b.dataset.tip;re()});
+    const tv=V.querySelector('[data-t=tipv]');if(tv)tv.oninput=()=>{opt.tipOther=tv.value;const c=calc();V.querySelector('#stip').textContent=rub(c.tip);V.querySelector('[data-t=total]').textContent=rub(c.total);V.querySelector('[data-t=order]').textContent='Заказать за '+rub(c.total)};
+    V.querySelector('[data-t=eco]').onchange=e=>{opt.eco=e.target.checked;re()};
+    V.querySelector('[data-t=order]').onclick=()=>{const c=calc();
+      const m=cart.find(x=>x.id==='marg'&&x.s===1);
+      if(!m)return api.fail('В заказе нет «Маргариты» 30 см. Сколько это в дюймах?');
+      if(cart.length>1||m.qty>1)return api.fail('В корзине есть что-то кроме одной пиццы.');
+      if(c.total!==m.p)return api.fail(`Итого ${rub(c.total)}, а пицца стоит ${rub(m.p)}. Лишние ${rub(c.total-m.p)} прячутся в оформлении.`);
+      api.win()};
+  }
+}});
+
+/* 9. ВОЗВРАТ ТОВАРА */
+LV({id:'refund',name:'Возврат товара',
+task:'Чайник сломался. Верни <b>сломанный белый чайник, который уже получил</b>, и получи все <b>3 990 ₽ на карту</b>, ничего не заплатив за возврат.',
+hints:['Нужный заказ — тот, что уже доставлен. Кнопка возврата спрятана в «⋯». Причина возврата влияет на способ возврата денег, а одна галочка внизу формы блокирует вариант «на карту».',
+'Заказ <b>№1042</b> (белый, доставлен) → «⋯» → «Оформить возврат». Причина «Брак или неисправность», опиши минимум тремя словами. Сними галочку «Я предпочитаю бонусы» — станет доступно «На карту». Способ отправки — пункт выдачи (бесплатно).'],
+css:`.l9 .ord{border:1px solid #e5e5ea;border-radius:14px;margin:12px 16px;padding:14px}.l9 .ord .row{justify-content:space-between}.l9 .st{font-size:13px;border-radius:6px;padding:3px 8px}.l9 .ok{background:#e4f7ea;color:#1b7a3d}.l9 .go{background:#fff3d6;color:#8a6200}`,
+render(V,api){
+  const O=[{n:'1077',d:'10 ноября',t:'Чайник «Кипяток» белый',st:'В пути',ok:false,e:'🫖'},{n:'1042',d:'3 ноября',t:'Чайник «Кипяток» белый',st:'Доставлен',ok:true,e:'🫖'},{n:'1013',d:'28 октября',t:'Чайник «Кипяток» чёрный',st:'Доставлен',ok:true,e:'🫖'}];
+  list();
+  function list(){V.innerHTML=`<div class="l9"><div class="ah">🛒 МегаКрив · Мои заказы</div>${O.map(o=>`<div class="ord"><div class="row"><b>Заказ №${o.n}</b><span class="st ${o.ok?'ok':'go'}">${o.st}</span></div><div class="muted" style="font-size:13px">от ${o.d}</div><div class="row" style="justify-content:flex-start;margin:10px 0"><span style="font-size:36px">${o.e}</span><span>${o.t}<br><b>3 990 ₽</b></span></div><div class="row"><button class="btn o" data-t="again-${o.n}" style="flex:1">Купить снова</button><button class="btn gr" data-t="more-${o.n}" style="width:54px">⋯</button></div></div>`).join('')}</div>`;
+    O.forEach(o=>{V.querySelector(`[data-t=again-${o.n}]`).onclick=()=>api.toast('Чайник добавлен в корзину. Ещё один. Сломается так же.');
+      V.querySelector(`[data-t=more-${o.n}]`).onclick=()=>{const s=api.sheet(`<h3>Заказ №${o.n}</h3><button class="btn gr w" data-t="tr">Отследить</button><button class="btn gr w" data-t="sh">Поделиться</button><button class="btn gr w" data-t="ret">Оформить возврат</button><button class="btn w" data-t="x">Закрыть</button>`);
+        s.querySelector('[data-t=x]').onclick=s.close;s.querySelector('[data-t=tr]').onclick=()=>api.toast('Посылка где-то между складом и вечностью.');s.querySelector('[data-t=sh]').onclick=()=>api.toast('Поделились с 0 друзьями.');
+        s.querySelector('[data-t=ret]').onclick=()=>{s.close();if(!o.ok)return api.toast('Нельзя вернуть то, что ещё не доставлено.');form(o)}}})}
+  function form(o){
+    V.innerHTML=`<div class="l9"><div class="ah"><button class="btn ghost" data-t="back">‹</button>Возврат · заказ №${o.n}</div><div class="p16">
+      <span class="lbl">Причина возврата</span><select class="inp" data-t="reason"><option value="">— выберите —</option><option value="dislike">Не подошёл / не понравился</option><option value="broken">Брак или неисправность</option><option value="mind">Передумал</option></select>
+      <div id="rx"></div>
+      <span class="lbl">Как вернуть деньги</span>
+      <label class="cb"><input type="radio" name="m" value="bonus" data-t="m-bonus" checked> Бонусами (+10%! 4 389 бонусов)</label>
+      <label class="cb" id="cardl" style="opacity:.4"><input type="radio" name="m" value="card" data-t="m-card" disabled> На карту •• 4417</label>
+      <span class="lbl">Как отправить товар</span>
+      <label class="cb"><input type="radio" name="d" value="courier" data-t="d-courier" checked> Курьер заберёт — 299 ₽ (удержим из суммы)</label>
+      <label class="cb"><input type="radio" name="d" value="pvz" data-t="d-pvz"> Сдать в пункт выдачи — бесплатно</label>
+      <label class="cb" style="margin-top:10px"><input type="checkbox" data-t="prefer" checked> <span class="tiny" style="font-size:12px">Я предпочитаю получать возврат бонусами — это выгоднее!</span></label>
+      <div class="card" style="margin-top:12px;background:#f9f9fb">Вам вернут: <b id="sum"></b></div>
+      <button class="btn w" data-t="send" style="margin-top:12px">Отправить заявку</button></div></div>`;
+    const q=s=>V.querySelector(s);
+    q('[data-t=back]').onclick=list;
+    const upd=()=>{const r=q('[data-t=reason]').value;const pref=q('[data-t=prefer]').checked;const card=q('[data-t=m-card]');
+      const canCard=!pref&&r!=='dislike';card.disabled=!canCard;q('#cardl').style.opacity=canCard?1:.4;if(!canCard){card.checked=false;q('[data-t=m-bonus]').checked=true}
+      const m=q('input[name=m]:checked').value,d=q('input[name=d]:checked').value;
+      q('#sum').textContent=m==='bonus'?'4 389 бонусов':rub(3990-(d==='courier'?299:0))+' на карту'};
+    const ta=()=>q('[data-t=desc]');
+    q('[data-t=reason]').onchange=()=>{const r=q('[data-t=reason]').value;q('#rx').innerHTML=r==='broken'?`<span class="lbl">Опишите неисправность (минимум 3 слова)</span><textarea class="inp" data-t="desc" rows="2"></textarea>`:r==='dislike'?'<div class="tiny" style="font-size:12px;margin-top:6px">При этой причине возврат возможен только бонусами.</div>':'';upd()};
+    V.querySelectorAll('input').forEach(i=>i.onchange=upd);upd();
+    q('[data-t=send]').onclick=()=>{const r=q('[data-t=reason]').value,m=q('input[name=m]:checked').value,d=q('input[name=d]:checked').value;
+      if(!r)return api.toast('Выберите причину');
+      if(r==='broken'&&(!ta()||ta().value.trim().split(/\s+/).filter(Boolean).length<3))return api.toast('Опишите неисправность хотя бы тремя словами');
+      if(o.n!=='1042')return api.fail('Вы вернули чёрный чайник. А сломан — белый.');
+      if(m!=='card')return api.fail('Заявка отправлена: вам вернут 4 389 бонусов. На бонусы можно купить… ещё один такой чайник.');
+      if(d!=='pvz')return api.fail('На карту придёт 3 691 ₽ — 299 ₽ удержали за курьера.');
+      if(r!=='broken')return api.fail('Магазин отклонил возврат: «передумал» на технику не распространяется.');
+      api.win()};
+  }
+}});
+
+/* 10. ПАРКОВКА */
+LV({id:'parking',name:'Парковка',
+task:'Оплати парковку для машины <b>А 123 ВС 163</b> ровно на <b>2 часа</b> в зоне, где ты стоишь (см. фото знака). Без сюрпризов.',
+hints:['Фото знака снято вверх ногами — переверни его в голове (или переверни iPad). Посмотри подсказку под полем госномера: какие буквы принимает система? И найди нормальную кнопку оплаты.',
+'Знак перевёрнут: зона <b>1609</b>. Номер вводи <b>латиницей</b>: A123BC163 (буквы А, В, С есть и в латинице). Длительность: «+1 ч» дважды (или комбинации с −45). Нажми маленькую «Оплатить», а не «с автопродлением».'],
+css:`.l10 .ph{margin:12px 16px;background:linear-gradient(#9fb4c7,#6d7f8f);border-radius:14px;height:190px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}.l10 .sign{transform:rotate(180deg);background:#fff;border:4px solid #1d4ed8;border-radius:10px;width:150px;text-align:center;padding:8px;color:#1d4ed8;font-family:Arial,sans-serif}.l10 .sign .P{font:900 48px Arial;background:#1d4ed8;color:#fff;border-radius:6px;line-height:1.1}.l10 .sign .z{font:900 26px Arial;margin-top:4px;color:#111}.l10 .stk{position:absolute;right:10px;bottom:10px;background:#ffeb3b;color:#333;font-size:10px;padding:4px 6px;transform:rotate(-4deg);border-radius:3px}.l10 .dur{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}`,
+render(V,api){
+  let dur=0;
+  V.innerHTML=`<div class="l10"><div class="ah">🅿️ Паркуйся! · Кривогорск</div>
+    <div class="ph"><div class="sign"><div class="P">P</div><div style="font-size:11px;font-weight:700;margin-top:4px">ПЛАТНАЯ ПАРКОВКА</div><div class="z">ЗОНА 1609</div><div style="font-size:11px">Пн–Пт 8:00–20:00</div></div><div class="stk">Продам гараж</div></div>
+    <div class="tiny" style="text-align:center">Фото с места стоянки · снято 14:09</div>
+    <div class="p16">
+      <span class="lbl">Номер зоны</span><input class="inp" data-t="zone" inputmode="numeric" placeholder="Например, 0001">
+      <span class="lbl">Госномер</span><input class="inp" data-t="plate" placeholder="А000АА000" autocapitalize="characters" autocorrect="off" spellcheck="false">
+      <div class="tiny">Буквы госномера — только латиница: A B E K M H O P C T Y X</div>
+      <span class="lbl">Длительность (начало — сейчас, 14:10)</span>
+      <div style="font-size:24px;font-weight:800" id="d">0 ч 00 мин</div><div class="muted" id="end" style="font-size:14px">до 14:10</div>
+      <div class="dur"><button class="chip" data-t="p30">+30 мин</button><button class="chip" data-t="p60">+1 ч</button><button class="chip" data-t="m45">−45 мин</button></div>
+      <button class="btn g w" data-t="payauto" style="margin-top:18px;padding:16px">Оплатить с автопродлением ✨ (рекомендуем)</button>
+      <div style="text-align:center;margin-top:8px"><button class="btn ghost" data-t="pay" style="font-size:13px;color:#aaa">оплатить</button></div></div></div>`;
+  const q=s=>V.querySelector(s);
+  const upd=()=>{q('#d').textContent=`${Math.floor(dur/60)} ч ${String(dur%60).padStart(2,'0')} мин`;const e=14*60+10+dur;q('#end').textContent=`до ${Math.floor(e/60)%24}:${String(e%60).padStart(2,'0')}`};
+  q('[data-t=p30]').onclick=()=>{dur+=30;upd()};q('[data-t=p60]').onclick=()=>{dur+=60;upd()};q('[data-t=m45]').onclick=()=>{if(dur<45)return api.toast('Нельзя уйти в минус. Хотя хочется.');dur-=45;upd()};
+  const check=auto=>{const z=q('[data-t=zone]').value.trim(),p=q('[data-t=plate]').value.replace(/\s/g,'').toUpperCase();
+    if(!z||!p)return api.toast('Заполните все поля');
+    if(/[А-ЯЁ]/.test(p))return api.fail('Номер не найден в базе. Странно, он же правильный… Перечитайте подсказку под полем.');
+    if(p!=='A123BC163')return api.fail('Такого номера в базе нет. Проверьте цифры и регион.');
+    if(z!=='1609')return api.fail(`Оплачена зона ${z}. Ваша машина стоит в другой. Штраф 5 000 ₽ 🚓`);
+    if(dur!==120)return api.fail(`Оплачено ${Math.floor(dur/60)} ч ${dur%60} мин, а нужно ровно 2 часа.`);
+    if(auto)return api.fail('Автопродление будет продлевать парковку каждые 15 минут. До 2031 года.');
+    api.win()};
+  q('[data-t=payauto]').onclick=()=>check(true);q('[data-t=pay]').onclick=()=>check(false);
+}});
+
+/* 11. ОТЕЛЬ */
+LV({id:'hotel',name:'Бронь отеля',
+task:'Забронируй номер в «Гранд Кривом» <b>с 10 по 12 марта</b> (2 ночи) — <b>с завтраком</b> и <b>бесплатной отменой</b>. Бюджет — не больше <b>9 000 ₽</b> за всё.',
+hints:['Календарь сначала спрашивает дату выезда. А в карточках номеров читай мелкий серый текст и пересчитывай цену за две ночи — где-то «за ночь», где-то «за всё», где-то «без НДС».',
+'В календаре сначала нажми <b>12</b> (выезд), потом <b>10</b> (заезд). Подходит только «Комфорт» — 8 400 ₽ за весь период + налог 2% = 8 568 ₽. На странице брони сними галочку трансфера.'],
+css:`.l11 .cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;padding:0 16px}.l11 .cal b{font-size:12px;color:#8e8e93;text-align:center;padding:4px 0}.l11 .cal button{aspect-ratio:1;border:none;border-radius:10px;background:#f2f2f7;font-size:16px;color:#1c1c1e;padding:0}.l11 .cal button.in{background:#34c759;color:#fff}.l11 .cal button.out{background:#ff9500;color:#fff}.l11 .cal button.mid{background:#d4f5dd}.l11 .of{margin:12px 16px;border:1px solid #e5e5ea;border-radius:14px;padding:14px}.l11 .of .fp{font-size:10px;color:#c2c2c7;margin-top:6px}`,
+render(V,api){
+  const OF=[{id:5,t:'Люкс',pr:'4 450 ₽',per:'за ночь',f:['Завтрак включён','Бесплатная отмена'],fp:'Цены указаны без НДС 20%.',why:'С НДС за 2 ночи выходит 10 680 ₽ — дороже бюджета.'},
+    {id:1,t:'Стандарт',pr:'3 900 ₽',per:'за ночь',f:['Завтрак включён'],fp:'Тариф «Невозвратный»: при отмене средства не возвращаются.',why:'Тариф невозвратный — бесплатной отмены нет.'},
+    {id:6,t:'Стандарт+',pr:'от 4 200 ₽',per:'за ночь',f:['Завтрак включён','Бесплатная отмена'],fp:'Цена для участников клуба «Кривой+». Без клуба — 4 800 ₽ за ночь.',why:'Без клуба 4 800 × 2 = 9 600 ₽ — дороже бюджета.'},
+    {id:2,t:'Стандарт',pr:'4 300 ₽',per:'за ночь',f:['Завтрак включён','Бесплатная отмена*'],fp:'*Акция «Бесплатная отмена» действовала до 01.01.2020.',why:'Звёздочка! Бесплатная отмена закончилась в 2020 году.'},
+    {id:4,t:'Эконом',pr:'2 900 ₽',per:'за ночь',f:['Бесплатная отмена'],fp:'Завтрак: не предоставляется.',why:'В «Экономе» нет завтрака.'},
+    {id:3,t:'Комфорт',pr:'8 400 ₽',per:'за весь период',f:['Завтрак включён','Бесплатная отмена'],fp:'+ туристический налог 2% оплачивается при заселении.',why:''}];
+  let out=null,inn=null,offer=null;
+  dates();
+  function dates(){out=null;inn=null;
+    V.innerHTML=`<div class="l11"><div class="ah">🏨 Гранд Кривой</div><div class="p16" style="padding-bottom:6px"><div style="font-size:15px" id="pr"><b>Шаг 1:</b> выберите дату <b>ВЫЕЗДА</b></div><div class="row" style="margin:10px 0;gap:8px"><div class="chip" id="o">Выезд: —</div><div class="chip" id="i">Заезд: —</div></div><b>Март 2027</b></div>
+    <div class="cal">${['Пн','Вт','Ср','Чт','Пт','Сб','Вс'].map(d=>`<b>${d}</b>`).join('')}${Array.from({length:31},(_,k)=>`<button data-t="d${k+1}" data-d="${k+1}">${k+1}</button>`).join('')}</div>
+    <div class="p16"><button class="btn w" data-t="find" disabled>Найти номера</button></div></div>`;
+    V.querySelectorAll('.cal button').forEach(b=>b.onclick=()=>{const d=+b.dataset.d;
+      if(out===null){out=d;b.classList.add('out');V.querySelector('#o').textContent=`Выезд: ${d} марта`;V.querySelector('#pr').innerHTML='<b>Шаг 2:</b> выберите дату <b>ЗАЕЗДА</b>';return}
+      if(inn===null){if(d>=out){api.toast('Дата выезда раньше даты заезда. Начните сначала.');return dates()}
+        inn=d;b.classList.add('in');for(let k=inn+1;k<out;k++)V.querySelector(`[data-d="${k}"]`).classList.add('mid');
+        V.querySelector('#i').textContent=`Заезд: ${d} марта`;V.querySelector('#pr').innerHTML=`${out-inn} ноч${out-inn===1?'ь':out-inn<5?'и':'ей'}. Можно искать.`;V.querySelector('[data-t=find]').disabled=false}});
+    V.querySelector('[data-t=find]').onclick=offers}
+  function offers(){
+    V.innerHTML=`<div class="l11"><div class="ah"><button class="btn ghost" data-t="back">‹</button>${inn}–${out} марта · Сортировка: по популярности</div>${OF.map(o=>`<div class="of"><div class="row" style="justify-content:space-between"><b style="font-size:17px">${o.t}</b><span><b class="price" style="font-size:19px">${o.pr}</b> <span class="muted" style="font-size:12px">${o.per}</span></span></div><div style="font-size:14px;color:#1b7a3d;margin-top:6px">${o.f.map(x=>'✓ '+x).join('<br>')}</div><div class="fp">${o.fp}</div><button class="btn w" data-t="of${o.id}" data-id="${o.id}" style="margin-top:10px">Выбрать</button></div>`).join('')}</div>`;
+    V.querySelector('[data-t=back]').onclick=dates;
+    V.querySelectorAll('[data-id]').forEach(b=>b.onclick=()=>{offer=OF.find(o=>o.id===+b.dataset.id);book()})}
+  function book(){
+    V.innerHTML=`<div class="l11"><div class="ah"><button class="btn ghost" data-t="back">‹</button>Бронирование</div><div class="p16">
+      <div class="card"><b>${offer.t}</b> · ${inn}–${out} марта<br><span class="muted">${offer.pr} ${offer.per}</span></div>
+      <label class="cb" style="margin-top:12px"><input type="checkbox" data-t="tr" checked> Трансфер из аэропорта — 2 500 ₽</label>
+      <label class="cb"><input type="checkbox" checked> Подписаться на новости отеля (бесплатно, навсегда)</label>
+      <button class="btn g w" data-t="book" style="margin-top:12px">Забронировать</button></div></div>`;
+    V.querySelector('[data-t=back]').onclick=offers;
+    V.querySelector('[data-t=book]').onclick=()=>{
+      if(inn!==10||out!==12){api.fail(`Забронировано с ${inn} по ${out} марта. А нужно с 10 по 12.`);return dates()}
+      if(offer.id!==3){api.fail(offer.why);return offers()}
+      if(V.querySelector('[data-t=tr]').checked)return api.fail('Итого 11 068 ₽ — к брони прицепился трансфер.');
+      api.win()};
+  }
+}});
+
+/* 12. АВИАБИЛЕТЫ */
+LV({id:'flight',name:'Авиабилеты',
+task:'Купи самый дешёвый <b>прямой</b> билет Москва → <b>Сочи</b> на <b>21 декабря 2026</b>. Без багажа и любых допуслуг.',
+hints:['Поле даты ждёт американский формат — читай подпись поля. В подсказках города есть похожие названия. В выдаче цена крупно — без сбора: складывай. На допах внимательно читай кнопки в окне подтверждения.',
+'Город: «Сочи (AER), Россия». Дата: <b>12/21/2026</b>. Итог с учётом сборов: самый дешёвый прямой — <b>ЭйрБоль за 6 100 + 900 = 7 000 ₽</b>. Сними все допы (при снятии багажа нажми «Да, без багажа»), на оплате сними SMS-информирование.'],
+css:`.l12 .fl{margin:10px 16px;border:1px solid #e5e5ea;border-radius:14px;padding:13px}.l12 .sug{border:1px solid #e5e5ea;border-radius:10px;margin-top:4px;overflow:hidden}.l12 .sug button{display:block;width:100%;text-align:left;border:none;background:#fff;padding:11px 12px;font-size:15px;border-bottom:1px solid #f2f2f2;color:#1c1c1e}`,
+render(V,api){
+  const CITIES=[['AER','Сочи (AER), Россия'],['SCN','Сочин (SCN), Китай'],['SPK','Сочи-Парк (ж/д станция)'],['SBR','Сосновый Бор (вертолётная площадка)']];
+  const F=[{id:'A',a:'КривоАвиа',tm:'07:10 → 09:40',d:true,p:4990,fee:3200},{id:'D',a:'Победоносец',tm:'13:20 → 15:55',d:true,p:7300,fee:0},{id:'C',a:'Лоукостер+',tm:'06:00 → 20:45',d:false,p:3500,fee:1000},{id:'E',a:'Аэро-Ок',tm:'21:00 → 23:40',d:true,p:5500,fee:1600},{id:'B',a:'ЭйрБоль',tm:'10:00 → 12:35',d:true,p:6100,fee:900}];
+  let dest=null,date=null,fl=null;const MON=['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+  search();
+  function search(){
+    V.innerHTML=`<div class="l12"><div class="ah">✈️ КриваяАвиа · Поиск</div><div class="p16">
+      <span class="lbl">Откуда</span><input class="inp" value="Москва (все аэропорты)" disabled>
+      <span class="lbl">Куда</span><input class="inp" data-t="to" placeholder="Город или аэропорт" autocomplete="off" autocorrect="off"><div class="sug" id="sug" style="display:none"></div>
+      <span class="lbl">Дата вылета (ММ/ДД/ГГГГ)</span><input class="inp" data-t="date" placeholder="ММ/ДД/ГГГГ" inputmode="numeric" autocomplete="off">
+      <div class="err" id="er"></div>
+      <button class="btn w" data-t="find" style="margin-top:14px">Найти билеты</button></div></div>`;
+    const to=V.querySelector('[data-t=to]'),sug=V.querySelector('#sug');
+    to.oninput=()=>{dest=null;const v=to.value.trim().toLowerCase();if(v.length<2){sug.style.display='none';return}
+      const m=CITIES.filter(c=>c[1].toLowerCase().includes(v.slice(0,2)));sug.innerHTML=m.map(c=>`<button data-t="city-${c[0]}" data-c="${c[0]}">${c[1]}</button>`).join('');sug.style.display=m.length?'block':'none';
+      sug.querySelectorAll('button').forEach(b=>b.onclick=()=>{dest=b.dataset.c;to.value=CITIES.find(c=>c[0]===dest)[1];sug.style.display='none'})};
+    V.querySelector('[data-t=find]').onclick=()=>{const er=V.querySelector('#er');er.textContent='';
+      if(!dest)return er.textContent='Выберите город из списка подсказок';
+      const dg=V.querySelector('[data-t=date]').value.replace(/\D/g,'');
+      if(dg.length!==8)return er.textContent='Введите дату в формате ММ/ДД/ГГГГ';
+      const mm=+dg.slice(0,2),dd=+dg.slice(2,4),yy=+dg.slice(4);
+      if(mm<1||mm>12)return er.textContent=`Месяц ${mm} не существует. Ну, у нас.`;
+      if(dd<1||dd>31)return er.textContent='Такого дня нет';
+      date={mm,dd,yy};results()}}
+  function results(){
+    V.innerHTML=`<div class="l12"><div class="ah"><button class="btn ghost" data-t="back">‹</button><span style="font-size:15px">Москва → ${CITIES.find(c=>c[0]===dest)[1].split(' (')[0]} · ${date.dd} ${MON[date.mm-1]} ${date.yy}</span></div><div class="tiny" style="padding:8px 16px 0">Сортировка: рекомендуемые (нами)</div>
+      ${F.map(f=>`<div class="fl"><div class="row" style="justify-content:space-between"><b>${f.a}</b><span style="font-size:22px;font-weight:800">${rub(f.p)}</span></div><div class="row" style="justify-content:space-between;margin-top:4px"><span>${f.tm}</span><span class="tiny">${f.fee?'+ сбор '+rub(f.fee):'сбор включён'}</span></div><div style="font-size:13px;margin-top:4px;color:${f.d?'#1b7a3d':'#c25e00'}">${f.d?'Прямой':'1 пересадка · 14 ч 45 мин'}</div><button class="btn w" data-t="fl-${f.id}" data-id="${f.id}" style="margin-top:10px">Выбрать</button></div>`).join('')}</div>`;
+    V.querySelector('[data-t=back]').onclick=search;
+    V.querySelectorAll('[data-id]').forEach(b=>b.onclick=()=>{fl=F.find(f=>f.id===b.dataset.id);extras()})}
+  function extras(){
+    const EX=[{id:'bag',t:'Багаж 20 кг',p:1990},{id:'seat',t:'Выбор места 1A у окна',p:590},{id:'ins',t:'Страховка от всего',p:390},{id:'prio',t:'Приоритетная посадка',p:290}];
+    V.innerHTML=`<div class="l12"><div class="ah"><button class="btn ghost" data-t="back">‹</button>Сделайте полёт удобнее</div><div class="p16">${EX.map(e=>`<label class="cb"><input type="checkbox" data-t="ex-${e.id}" data-id="${e.id}" checked><span style="flex:1">${e.t}</span><b>${rub(e.p)}</b></label>`).join('')}<button class="btn w" data-t="next" style="margin-top:12px">Далее</button></div></div>`;
+    V.querySelector('[data-t=back]').onclick=results;
+    const bag=V.querySelector('[data-t=ex-bag]');
+    bag.onchange=()=>{if(bag.checked)return;bag.checked=true;
+      const s=api.sheet(`<h3>Вы уверены? 😱</h3><p>Без багажа можно взять только ручную кладь весом до 0 кг.</p><button class="btn g w" data-t="keep" style="padding:16px">Оставить багаж</button><div style="text-align:center;margin-top:8px"><button class="btn tb" data-t="nobag">Да, без багажа</button></div>`);
+      s.querySelector('[data-t=keep]').onclick=s.close;s.querySelector('[data-t=nobag]').onclick=()=>{bag.checked=false;s.close()}};
+    V.querySelector('[data-t=next]').onclick=()=>{const chosen=EX.filter(e=>V.querySelector(`[data-t=ex-${e.id}]`).checked);pay(chosen)}}
+  function pay(chosen){
+    const total=fl.p+fl.fee+chosen.reduce((a,e)=>a+e.p,0);
+    V.innerHTML=`<div class="l12"><div class="ah"><button class="btn ghost" data-t="back">‹</button>Оплата</div><div class="p16"><div class="card">${fl.a} · ${fl.tm}<br>Билет ${rub(fl.p)}${fl.fee?' + сбор '+rub(fl.fee):''}${chosen.map(e=>'<br>'+e.t+' '+rub(e.p)).join('')}</div>
+      <div style="font-size:22px;font-weight:800;margin:14px 0" id="tot">Итого: ${rub(total)}</div>
+      <label class="cb"><input type="checkbox" data-t="sms" checked><span class="tiny" style="font-size:11px">SMS-информирование о рейсе — 99 ₽</span></label>
+      <button class="btn g w" data-t="pay">Оплатить</button></div></div>`;
+    V.querySelector('[data-t=back]').onclick=extras;
+    V.querySelector('[data-t=pay]').onclick=()=>{
+      if(dest!=='AER'){api.fail('Билет куплен… в другой «Сочи». Посмотрите на код аэропорта.');return search()}
+      if(!(date.dd===21&&date.mm===12&&date.yy===2026)){api.fail(`Билет на ${date.dd} ${MON[date.mm-1]} ${date.yy}. Не та дата.`);return search()}
+      if(!fl.d){api.fail('Это рейс с пересадкой на 14 часов. Нужен прямой.');return results()}
+      if(fl.id!=='B'){api.fail(`${fl.a}: ${rub(fl.p+fl.fee)} с учётом сбора. Есть прямой рейс дешевле — сложи цену и сбор у всех.`);return results()}
+      if(chosen.length)return api.fail('В заказе остались допуслуги. Вернитесь и снимите их.');
+      if(V.querySelector('[data-t=sms]').checked)return api.fail('Мелким шрифтом: SMS-информирование — 99 ₽. Это тоже допуслуга.');
+      api.win()};
+  }
+}});
+
+/* ===================== МИР 3: ДЕНЬГИ И БЮРОКРАТИЯ ===================== */
+
+/* 13. ОБМЕННИК */
+LV({id:'exchange',name:'Обменник',
+task:'Купи <b>ровно 100 $</b>, потратив <b>как можно меньше рублей</b>. Сравни все три банка.',
+hints:['«Покупка» и «Продажа» в таблице — с точки зрения банка, а не твоей. Не забывай про комиссии. И посмотри, в какую сторону настроен обмен по умолчанию.',
+'Ты покупаешь доллары → банк их ПРОДАЁТ → смотри колонку «Продажа». Итого: Альфа 96,80 × 100 = 9 680 ₽; Бета 9 590 + 1% ≈ 9 686 ₽; Гамма 9 640 + 150 = 9 790 ₽. Выбери <b>Альфа-Кривой</b>, нажми ⇅, чтобы отдавать рубли, введи <b>9680</b>, нажми «Обменять».'],
+css:`.l13 table{width:100%;border-collapse:collapse;font-size:15px}.l13 td,.l13 th{padding:10px 8px;border-bottom:1px solid #eee;text-align:right}.l13 th{font-size:12px;color:#8e8e93;font-weight:600}.l13 td:first-child,.l13 th:first-child{text-align:left}.l13 .bk{width:100%;text-align:left;border:1px solid #e5e5ea;background:#fff;border-radius:14px;padding:12px 14px;margin:8px 0;color:#1c1c1e;font-size:15px}.l13 .ex{border:1px solid #e5e5ea;border-radius:14px;padding:14px;margin-top:8px}.l13 .sw{display:block;margin:8px auto;width:48px;height:48px;border-radius:50%;border:none;background:#007aff;color:#fff;font-size:22px}`,
+render(V,api){
+  const B=[{id:'a',n:'Альфа-Кривой',buy:91.20,sell:96.80,c:'Без комиссии',fee:r=>0},{id:'b',n:'Бета-Банк',buy:93.50,sell:95.90,c:'Комиссия 1% от суммы, если она меньше 10 000 ₽',fee:r=>r<10000?r*0.01:0},{id:'g',n:'Гамма',buy:90.00,sell:96.40,c:'Комиссия 150 ₽ за операцию',fee:r=>150}];
+  const f2=n=>n.toFixed(2).replace('.',',');
+  let bank=null,dir='usd2rub';
+  home();
+  function home(){
+    V.innerHTML=`<div class="l13"><div class="ah">💱 ОбменКрив · курсы USD</div><div class="p16">
+      <table><tr><th>Банк</th><th>Покупка</th><th>Продажа</th></tr>${B.map(b=>`<tr><td>${b.n}</td><td>${f2(b.buy)}</td><td>${f2(b.sell)}</td></tr>`).join('')}</table>
+      <div class="tiny" style="margin-top:6px">Курсы покупки и продажи указаны с точки зрения банка.</div>
+      <div class="lbl">Выберите банк для обмена</div>${B.map(b=>`<button class="bk" data-t="bank-${b.id}" data-id="${b.id}"><b>${b.n}</b><br><span class="tiny" style="font-size:12px">${b.c}</span></button>`).join('')}</div></div>`;
+    V.querySelectorAll('[data-id]').forEach(x=>x.onclick=()=>{bank=B.find(b=>b.id===x.dataset.id);dir='usd2rub';form()})}
+  function calc(v){if(dir==='rub2usd'){const fee=bank.fee(v);return Math.floor(((v-fee)/bank.sell)*100+1e-6)/100}return Math.floor(v*bank.buy*100)/100}
+  function form(){
+    V.innerHTML=`<div class="l13"><div class="ah"><button class="btn ghost" data-t="back">‹</button>${bank.n}</div><div class="p16">
+      <div class="ex"><div class="muted" style="font-size:13px">Отдаю</div><div class="row"><input class="inp" data-t="amt" inputmode="decimal" placeholder="0" style="font-size:24px;font-weight:700"><b style="font-size:22px" id="c1">${dir==='rub2usd'?'₽':'$'}</b></div></div>
+      <button class="sw" data-t="swap">⇅</button>
+      <div class="ex" style="background:#f9f9fb"><div class="muted" style="font-size:13px">Получаю</div><div class="row" style="font-size:24px;font-weight:700"><span id="out" style="flex:1">0</span><b id="c2">${dir==='rub2usd'?'$':'₽'}</b></div></div>
+      <div class="tiny" style="margin-top:8px">${bank.c}. Курс: покупка ${f2(bank.buy)} · продажа ${f2(bank.sell)}</div>
+      <button class="btn g w" data-t="go" style="margin-top:14px">Обменять</button><button class="btn o w" data-t="go2">Обменять и открыть вклад 🎁</button></div></div>`;
+    const amt=V.querySelector('[data-t=amt]');
+    const upd=()=>{const v=parseFloat(amt.value.replace(',','.'))||0;V.querySelector('#out').textContent=f2(Math.max(0,calc(v)))};
+    amt.oninput=upd;
+    V.querySelector('[data-t=back]').onclick=home;
+    V.querySelector('[data-t=swap]').onclick=()=>{dir=dir==='rub2usd'?'usd2rub':'rub2usd';form()};
+    V.querySelector('[data-t=go2]').onclick=()=>api.fail('Вклад открыт на 3 года без права снятия. Доллары — там же.');
+    V.querySelector('[data-t=go]').onclick=()=>{const v=parseFloat(amt.value.replace(',','.'))||0;if(!v)return api.toast('Введите сумму');
+      if(dir!=='rub2usd')return api.fail(`Вы ПРОДАЛИ ${v} $ и получили рубли. А нужно было купить доллары.`);
+      const usd=calc(v);
+      if(Math.abs(usd-100)>0.001)return api.fail(`Вы получите ${f2(usd)} $. Нужно ровно 100,00 $.`);
+      if(bank.id!=='a')return api.fail(`100 $ обошлись в ${f2(v)} ₽. В другом банке было бы дешевле — посчитай с комиссией.`);
+      api.win()};
+  }
+}});
+
+/* 14. БАНКОВСКИЙ ПЕРЕВОД */
+LV({id:'transfer',name:'Перевод Маше',
+task:'Переведи Маше (номер заканчивается на <b>45-67</b>) ровно <b>1 500 ₽</b>. Комиссия — <b>0 ₽</b>, ни копейки банку.',
+hints:['Посмотри на подпись над полем суммы — в чём здесь вводится сумма? И внимательно прочитай условие о комиссии: «за операцию».',
+'Сумма вводится в <b>копейках</b>: 1 000 ₽ = 100000. Комиссия 0 только до 1 000 ₽ за операцию → сделай <b>два перевода</b>: 1 000 ₽ и 500 ₽ (100000 и 50000) получателю «Маша Работа» (…45-67). Код из SMS — в уведомлении (🔔).'],
+css:`.l14 .bal{background:linear-gradient(135deg,#1f6feb,#7b2ff7);color:#fff;border-radius:18px;padding:18px;margin:14px 16px}.l14 .bal b{font-size:30px;display:block}.l14 .hi{display:flex;justify-content:space-between;padding:10px 16px;border-bottom:1px solid #f2f2f2;font-size:14px}.l14 .ct{display:flex;align-items:center;gap:12px;width:100%;border:none;background:#fff;border-bottom:1px solid #eee;padding:12px 16px;text-align:left;font-size:16px;color:#1c1c1e}.l14 .ct .av{width:40px;height:40px;border-radius:50%;background:#e5e5ea;display:flex;align-items:center;justify-content:center;font-size:20px}.l14 .ct.on{background:#eaf2ff}`,
+render(V,api){
+  api.sb('12:05');
+  const C=[{id:'m1',n:'Маша 🌸',ph:'+7 9•• •••-76-54',e:'👩'},{id:'m4',n:'Машина мойка',ph:'+7 9•• •••-45-67',e:'🚗'},{id:'m3',n:'Мария Петровна',ph:'+7 9•• •••-45-76',e:'👵'},{id:'m2',n:'Маша Работа',ph:'+7 9•• •••-45-67',e:'👩‍💼'}];
+  let bal=5000,hist=[],to=null;
+  home();
+  function home(){
+    V.innerHTML=`<div class="l14"><div class="ah">🏦 КривоБанк</div><div class="bal">Основной счёт<b>${rub(bal)}</b></div>
+      <div class="p16" style="padding-top:0"><button class="btn w" data-t="pay">Перевести</button></div>
+      <div class="grp">История</div>${hist.length?hist.map(x=>`<div class="hi"><span>→ ${x.n}</span><b>−${rub(x.r)}</b></div>`).join(''):'<div class="hi muted">Пока пусто</div>'}</div>`;
+    V.querySelector('[data-t=pay]').onclick=methods}
+  function methods(){
+    V.innerHTML=`<div class="l14"><div class="ah"><button class="btn ghost" data-t="back">‹</button>Переводы</div>
+      <button class="li" data-t="m-card">💳 По номеру карты <span class="chev">›</span></button>
+      <button class="li" data-t="m-phone">📱 По номеру телефона <span class="chev">›</span></button>
+      <button class="li" data-t="m-sbp" style="color:#c7c7cc">⚡ СБП <span class="tiny">временно недоступно</span></button>
+      <button class="li" data-t="m-tpl">⭐ Шаблоны <span class="chev">›</span></button></div>`;
+    V.querySelector('[data-t=back]').onclick=home;
+    V.querySelector('[data-t=m-card]').onclick=()=>api.toast('По номеру карты — комиссия 1,5%, минимум 50 ₽. Точно не сюда.');
+    V.querySelector('[data-t=m-sbp]').onclick=()=>api.toast('СБП временно недоступна. С 2019 года.');
+    V.querySelector('[data-t=m-tpl]').onclick=()=>api.toast('Шаблонов нет. Создание шаблона — 99 ₽.');
+    V.querySelector('[data-t=m-phone]').onclick=()=>{to=null;phone()}}
+  function phone(){
+    V.innerHTML=`<div class="l14"><div class="ah"><button class="btn ghost" data-t="back">‹</button>По номеру телефона</div>
+      <div class="grp">Получатель</div>${C.map(c=>`<button class="ct ${to===c.id?'on':''}" data-t="c-${c.id}" data-id="${c.id}"><span class="av">${c.e}</span><span><b>${c.n}</b><br><span class="muted" style="font-size:13px">${c.ph}</span></span></button>`).join('')}
+      <div class="p16"><span class="tiny" style="font-size:11px">Сумма, коп.</span><input class="inp" data-t="amt" inputmode="numeric" placeholder="Сумма" style="font-size:24px;font-weight:700">
+      <div class="muted" id="eq" style="font-size:14px;margin-top:4px">= 0,00 ₽</div><div id="fee" style="font-size:14px;margin-top:4px">Комиссия: 0 ₽</div>
+      <div class="tiny" style="margin-top:6px">Без комиссии — до 1 000 ₽ за операцию. Свыше — 1% от всей суммы операции.</div>
+      <button class="btn w" data-t="next" style="margin-top:14px">Продолжить</button></div></div>`;
+    V.querySelector('[data-t=back]').onclick=methods;
+    V.querySelectorAll('[data-id]').forEach(b=>b.onclick=()=>{to=b.dataset.id;V.querySelectorAll('.ct').forEach(x=>x.classList.toggle('on',x===b))});
+    const amt=V.querySelector('[data-t=amt]');
+    const vals=()=>{const k=parseInt(amt.value.replace(/\D/g,''))||0;const r=k/100;const fee=r>1000?Math.round(r)*0.01:0;return{k,r,fee}};
+    amt.oninput=()=>{const{r,fee}=vals();V.querySelector('#eq').textContent='= '+r.toFixed(2).replace('.',',')+' ₽';V.querySelector('#fee').textContent='Комиссия: '+fee.toFixed(2).replace('.',',')+' ₽'};
+    V.querySelector('[data-t=next]').onclick=()=>{const v=vals();if(!to)return api.toast('Выберите получателя');if(!v.k)return api.toast('Введите сумму');if(v.r+v.fee>bal)return api.toast('Недостаточно средств');confirm(v)}}
+  function confirm(v){
+    const c=C.find(x=>x.id===to);const code=String(rnd(1000,9999));
+    V.innerHTML=`<div class="l14"><div class="ah">Подтверждение</div><div class="p16"><div class="card">Получатель: <b>${c.n}</b> ${c.ph}<br>Сумма: <b>${fmt(Math.floor(v.k/100))},${String(v.k%100).padStart(2,'0')} ₽</b><br>Комиссия: <b>${v.fee.toFixed(2).replace('.',',')} ₽</b></div>
+      <p class="muted" style="font-size:14px">Мы отправили SMS с кодом.</p><input class="inp" data-t="code" inputmode="numeric" placeholder="Код из SMS"><button class="btn g w" data-t="ok" style="margin-top:12px">Подтвердить</button><button class="btn gr w" data-t="cancel">Отмена</button></div></div>`;
+    api.push('💬 Сообщения',`КривоБанк: код ${code} для перевода ${rub(v.r)}. Никому не сообщайте. Даже этому полю.`,900);
+    V.querySelector('[data-t=cancel]').onclick=home;
+    V.querySelector('[data-t=ok]').onclick=()=>{
+      if(V.querySelector('[data-t=code]').value.trim()!==code)return api.toast('Неверный код. Код — в уведомлении (🔔 сверху).');
+      bal-=v.r+v.fee;hist.unshift({n:c.n,r:v.r+v.fee});
+      const reset=()=>{bal=5000;hist=[];home()};
+      if(to!=='m2'){api.fail(`Деньги ушли «${c.n}». Банк вернул их (в этот раз). Начинаем заново.`);return reset()}
+      if(v.fee>0){api.fail(`Комиссия ${v.fee.toFixed(2).replace('.',',')} ₽ ушла банку. Перевод отменён, пробуйте снова.`);return reset()}
+      const sent=hist.filter(x=>x.n===c.n).reduce((a,x)=>a+x.r,0);
+      if(sent>1500){api.fail(`Маше ушло ${rub(sent)} — больше, чем нужно. Начинаем заново.`);return reset()}
+      if(Math.abs(sent-1500)<0.001)return api.win();
+      api.toast(`Переведено ${rub(v.r)}. Всего Маше: ${rub(sent)}.`,'good');home()};
+  }
+}});
+
+/* 15. ОТМЕНА ПОДПИСКИ */
+LV({id:'unsub',name:'Отмена подписки',
+task:'Отключи автопродление подписки «КиноКрив+». Без пауз, скидок и «может, останетесь».',
+hints:['Управление подпиской спрятано в самом низу профиля мелким текстом. Дальше — серия вопросов с отрицаниями: читай КАЖДЫЙ, кнопки меняются местами, а яркая кнопка почти всегда ведёт назад.',
+'Профиль (👤) → в самом низу «управление подпиской» → маленькая «Отключить автопродление». Ответы: «Да» · «Нет, спасибо» · «Уверен» · «Не отменять» · «Не передумал» · «Не сохранять» · введи слово <b>ОТКЛЮЧИТЬ</b>.'],
+css:`.l15{background:#141414;color:#fff;min-height:64vh}.l15 .ah{background:#141414;color:#fff;border-color:#2a2a2a}.l15 .row2{display:flex;gap:8px;overflow:hidden;padding:0 16px 14px}.l15 .pos{width:110px;height:150px;border-radius:8px;flex:none;display:flex;align-items:flex-end;padding:8px;font-size:12px;font-weight:700}.l15 .li{background:#141414;color:#fff;border-color:#2a2a2a}.l15 .q{padding:30px 22px;text-align:center}.l15 .q h3{font-size:22px;line-height:1.3}.l15 .qb{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:24px;align-items:center}`,
+render(V,api){
+  const Q=[{q:'Вы действительно хотите отключить автопродление?',a:['Да','Нет'],ok:0},
+    {q:'Может, останетесь? Дарим скидку 50% на 3 месяца! 🎁',a:['Остаться со скидкой','Нет, спасибо'],ok:1},
+    {q:'Вы уверены, что не хотите остаться?',a:['Не уверен','Уверен'],ok:1},
+    {q:'Отменить отключение автопродления?',a:['Отменить отключение','Не отменять'],ok:1},
+    {q:'Вы не передумали отказываться от подписки?',a:['Не передумал','Передумал'],ok:0},
+    {q:'Сохранить подписку, отказавшись от отмены отключения?',a:['Не сохранять','Сохранить'],ok:0}];
+  home();
+  function home(){
+    const C=['#e50914','#1f6feb','#7b2ff7','#f59f00','#2fd27a','#ff4f6d'];
+    V.innerHTML=`<div class="l15"><div class="ah">КиноКрив<span style="color:#e50914">+</span><span class="sp"></span><button class="btn ghost" data-t="prof" style="color:#fff;font-size:22px">👤</button></div>
+      ${['Продолжить просмотр','Новинки','Вам понравится'].map((t,i)=>`<div style="padding:8px 16px;font-weight:700">${t}</div><div class="row2">${[0,1,2,3,4].map(k=>`<div class="pos" style="background:${C[(i+k)%6]}">Фильм ${i*5+k+1}</div>`).join('')}</div>`).join('')}</div>`;
+    V.querySelector('[data-t=prof]').onclick=profile}
+  function profile(){
+    V.innerHTML=`<div class="l15"><div class="ah"><button class="btn ghost" data-t="back" style="color:#fff">‹</button>Профиль</div>
+      <div class="p16"><b style="font-size:20px">Игрок</b><div style="color:#888">Премиум · 699 ₽/мес</div></div>
+      ${['🏆 Ваши достижения','🕘 История просмотров','📥 Загрузки','👨‍👩‍👧 Семейный доступ','🔔 Уведомления','⚙️ Настройки воспроизведения','❓ Помощь','📄 Правовая информация'].map(t=>`<button class="li" data-t="x">${t}<span class="chev">›</span></button>`).join('')}
+      <div style="padding:30px 16px 20px;text-align:center"><button class="btn ghost" data-t="manage" style="color:#444;font-size:11px">управление подпиской</button></div></div>`;
+    V.querySelector('[data-t=back]').onclick=home;
+    V.querySelectorAll('[data-t=x]').forEach(b=>b.onclick=()=>api.toast('Здесь ничего интересного. Как и в большинстве меню.'));
+    V.querySelector('[data-t=manage]').onclick=manage}
+  function manage(){
+    V.innerHTML=`<div class="l15"><div class="ah"><button class="btn ghost" data-t="back" style="color:#fff">‹</button>Подписка</div><div class="p16">
+      <div class="card" style="background:#1f1f1f;border-color:#333;color:#fff"><b>Премиум</b> · 699 ₽/мес<br><span style="color:#888;font-size:14px">Следующее списание: 1 декабря</span></div>
+      <button class="btn w" data-t="change" style="margin-top:14px;background:#e50914">Сменить тариф</button><button class="btn w" data-t="pause" style="background:#333">Приостановить на 3 месяца</button>
+      <div style="text-align:center;margin-top:18px"><button class="btn ghost" data-t="off" style="color:#555;font-size:12px">Отключить автопродление</button></div></div></div>`;
+    V.querySelector('[data-t=back]').onclick=profile;
+    V.querySelector('[data-t=change]').onclick=()=>api.toast('Доступные тарифы: Премиум, Премиум+, Премиум++. Отключения среди них нет.');
+    V.querySelector('[data-t=pause]').onclick=()=>{api.fail('Подписка приостановлена… и возобновится через 3 месяца с оплатой сразу за все 4.');home()};
+    V.querySelector('[data-t=off]').onclick=()=>ask(0)}
+  function ask(i){
+    if(i>=Q.length)return final();
+    const x=Q[i];const flip=i%2===1;
+    const btns=x.a.map((t,k)=>{const good=k===x.ok;return `<button class="btn" data-t="q${i}-${k}" data-k="${k}" style="${good?'background:#2a2a2a;color:#aaa;font-size:14px;padding:10px 14px':'background:#e50914;font-size:18px;padding:16px 22px'}">${t}</button>`});
+    V.innerHTML=`<div class="l15"><div class="q"><div style="color:#666;font-size:13px">Шаг ${i+1} из ${Q.length+1}</div><h3>${x.q}</h3><div class="qb">${(flip?btns.reverse():btns).join('')}</div></div></div>`;
+    V.querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{if(+b.dataset.k===x.ok)ask(i+1);else{api.fail('🎉 Отлично! Ваша подписка сохранена и продлена ещё на год.');home()}})}
+  function final(){
+    V.innerHTML=`<div class="l15"><div class="q"><div style="color:#666;font-size:13px">Шаг ${Q.length+1} из ${Q.length+1}</div><h3>Чтобы подтвердить, введите слово <span style="color:#e50914">ОТКЛЮЧИТЬ</span></h3><input class="inp" data-t="word" autocapitalize="characters" autocorrect="off" style="text-align:center;margin-top:12px"><button class="btn w" data-t="done" style="margin-top:12px;background:#e50914">Подтвердить</button></div></div>`;
+    V.querySelector('[data-t=done]').onclick=()=>{const w=V.querySelector('[data-t=word]').value.trim().toUpperCase();
+      if(w!=='ОТКЛЮЧИТЬ')return api.toast('Слово не совпадает. Регистр не важен, а вот буквы — очень.');
+      V.innerHTML=`<div class="l15"><div class="q"><div style="font-size:50px">✅</div><h3>Автопродление отключено</h3><p style="color:#888">Подписка действует до 1 декабря. Мы будем скучать. И писать. Каждый день.</p></div></div>`;api.later(api.win,900)}}
+}});
+
+/* 16. ПОЧТА: НАЙДИ КОД */
+LV({id:'mailcode',name:'Код из письма',
+task:'Банк просит ввести код из письма. Найди <b>действующий</b> код и введи его на вкладке банка. Сейчас <b>09:43</b>, код живёт 5 минут.',
+hints:['Почта по умолчанию показывает только непрочитанные, поиск работает «по точному совпадению», а письма бывают в разных папках. Смотри на адрес отправителя и на время — в разных форматах.',
+'Письмо от «КривоБанк Безопасность» — мошенники (адрес на gmail). «вчера» и «11/18 09:14» (американский формат = сегодня 09:14) — коды истекли. Действующий код в папке <b>Спам</b>: письмо от noreply@krivobank.ru в 09:41 — <b>7314</b>.'],
+css:`.l16 .tabs{display:flex;gap:4px;background:#e5e5ea;padding:6px 6px 0}.l16 .tabs button{border:none;background:#d1d1d6;border-radius:9px 9px 0 0;padding:9px 14px;font-size:14px;color:#1c1c1e}.l16 .tabs button.on{background:#fff;font-weight:700}.l16 .fold{display:flex;gap:6px;overflow-x:auto;padding:10px 12px}.l16 .fold .chip{white-space:nowrap;font-size:14px;padding:7px 12px}.l16 .ml{display:block;width:100%;text-align:left;border:none;border-bottom:1px solid #f0f0f0;background:#fff;padding:11px 14px;color:#1c1c1e}.l16 .ml.un b{font-weight:800}.l16 .ml.un::before{content:"●";color:#007aff;font-size:10px;margin-right:6px;vertical-align:2px}.l16 .ml .dt{float:right;color:#8e8e93;font-size:12px}.l16 .ml .sj{display:block;font-size:14px;margin-top:2px}`,
+render(V,api){
+  api.sb('09:43');
+  const M=[
+    {f:'in',from:'КривоБанк Безопасность',addr:'krivobank.security@gmail.com',sj:'СРОЧНО! Код подтверждения',dt:'09:42',un:true,body:'Ваш код: <b>0000</b>. Для безопасности также ответьте на это письмо, указав пароль от интернет-банка.'},
+    {f:'in',from:'Мама',addr:'mama1961@mail.ru',sj:'Ты поел?',dt:'08:30',un:true,body:'Ты поел? Шапку надел?'},
+    {f:'in',from:'КривоБанк',addr:'noreply@krivobank.ru',sj:'Код подтверждения',dt:'вчера',un:false,body:'Ваш код: <b>2229</b>. Действует 5 минут.'},
+    {f:'in',from:'HR КривоСофт',addr:'hr@krivosoft.ru',sj:'Результаты теста',dt:'вчера',un:false,body:'Вы прошли тест! Ждём вас на собеседовании в 2031 году.'},
+    {f:'promo',from:'КривоБанк',addr:'noreply@krivobank.ru',sj:'Код подтверждения',dt:'11/18 09:14',un:true,body:'Ваш код: <b>5580</b>. Действует 5 минут.'},
+    {f:'promo',from:'ПиццаКрив',addr:'promo@pizzakriv.ru',sj:'−90% на всё (кроме всего)',dt:'11/17',un:true,body:'Скидка не распространяется на пиццу.'},
+    {f:'social',from:'Кривограм',addr:'no-reply@krivogram.ru',sj:'Вас отметили на фото',dt:'17.11',un:true,body:'Это фото 2012 года. Вы прекрасны.'},
+    {f:'spam',from:'Принц Нигерии',addr:'prince@totally.legit',sj:'Наследство $10 000 000',dt:'16.11',un:true,body:'Пришлите код из СМС, и миллионы ваши.'},
+    {f:'spam',from:'КривоБанк',addr:'noreply@krivobank.ru',sj:'Код подтверждения',dt:'18.11, 09:41',un:true,body:'Ваш код: <b>7314</b>. Действует 5 минут.'}];
+  const FOLD=[['in','Входящие'],['promo','Промоакции'],['social','Соцсети'],['spam','Спам']];
+  let tab='bank',fold='in',onlyUn=true,qy='';
+  draw();
+  function draw(){
+    V.innerHTML=`<div class="l16"><div class="tabs"><button class="${tab==='bank'?'on':''}" data-t="tab-bank">🏦 КривоБанк</button><button class="${tab==='mail'?'on':''}" data-t="tab-mail">📧 Почта</button></div><div id="c"></div></div>`;
+    V.querySelector('[data-t=tab-bank]').onclick=()=>{tab='bank';draw()};V.querySelector('[data-t=tab-mail]').onclick=()=>{tab='mail';draw()};
+    const c=V.querySelector('#c');
+    if(tab==='bank'){c.innerHTML=`<div class="p16"><h3 style="margin-top:4px">Вход в интернет-банк</h3><p class="muted" style="font-size:14px">Мы отправили код подтверждения на вашу почту.</p><input class="inp" data-t="code" inputmode="numeric" placeholder="Код из письма"><button class="btn w" data-t="ok" style="margin-top:12px">Подтвердить</button></div>`;
+      c.querySelector('[data-t=ok]').onclick=()=>{const v=c.querySelector('[data-t=code]').value.trim();
+        if(v==='7314')return api.win();
+        if(v==='0000')return api.fail('Это был код от мошенников! Посмотрите на адрес отправителя.');
+        if(v==='5580'||v==='2229')return api.fail('Код истёк. Сколько сейчас времени и когда пришло письмо?');
+        api.fail('Неверный код.')};return}
+    const list=M.filter(m=>m.f===fold&&(!onlyUn||m.un)&&(!qy||m.sj===qy));
+    c.innerHTML=`<div style="padding:10px 12px 0"><input class="inp" data-t="search" placeholder="Поиск по теме письма" value="${qy}" style="font-size:15px;padding:9px 12px"></div>
+      <div class="fold">${FOLD.map(([k,n])=>`<button class="chip ${fold===k?'on':''}" data-t="f-${k}" data-f="${k}">${n}</button>`).join('')}<button class="chip ${onlyUn?'on':''}" data-t="unread">Только непрочитанные</button></div>
+      ${list.length?list.map(m=>`<button class="ml ${m.un?'un':''}" data-i="${M.indexOf(m)}" data-t="mail-${M.indexOf(m)}"><b>${m.from}</b><span class="dt">${m.dt}</span><span class="sj">${m.sj}</span></button>`).join(''):`<div class="p16 muted">${qy?'Ничего не найдено (поиск по точному совпадению темы, с учётом регистра)':'Писем нет'}</div>`}`;
+    const s=c.querySelector('[data-t=search]');s.onchange=()=>{qy=s.value.trim();draw()};
+    c.querySelectorAll('[data-f]').forEach(b=>b.onclick=()=>{fold=b.dataset.f;draw()});
+    c.querySelector('[data-t=unread]').onclick=()=>{onlyUn=!onlyUn;draw()};
+    c.querySelectorAll('[data-i]').forEach(b=>b.onclick=()=>{const m=M[+b.dataset.i];m.un=false;
+      const sh=api.sheet(`<div class="muted" style="font-size:13px">${m.dt}</div><h3>${m.sj}</h3><div style="font-size:14px"><b>${m.from}</b> <span class="tiny" style="font-size:12px">&lt;${m.addr}&gt;</span></div><hr class="s"><p>${m.body}</p><button class="btn w gr" data-t="mclose">Закрыть</button>`);
+      sh.querySelector('[data-t=mclose]').onclick=()=>{sh.close();draw()}})}
+}});
+
+/* 17. ВИЗА */
+LV({id:'visa',name:'Анкета на визу',
+task:'Заполни анкету на визу в Кривостан. Данные — в паспорте. Едешь <b>на неделю в отпуск</b>, раньше в Кривостане <b>не был</b>, правила въезда <b>прочитал</b>.',
+hints:['Каждый вопрос — маленькая ловушка: порядок полей, примеры-обманки, странный формат даты, автозаполнение, отрицания и условия «если… то». Форма не говорит, где ошибка, — только сколько их.',
+'Имя: ANNA · Фамилия: IVANOVA · Дата: <b>1990-03-07</b> (ГГГГ-ДД-ММ) · Пол: F · Паспорт: 751234567 · Цель: Туризм · Дней: 7 · галочку «НЕ планируете НЕ возвращаться» <b>поставить</b> · «Дата прошлого визита» — не пустая (напиши «никогда») · поле «Номер прошлой визы» <b>очистить</b> · галочку «не согласен, что не ознакомился» <b>поставить</b>. Кнопка «Отправить» — серая справа.'],
+css:`.l17 .pp{margin:14px 16px;background:linear-gradient(135deg,#7a1f3d,#4b1028);color:#ffe9b3;border-radius:14px;padding:14px;font-family:"Courier New",monospace;font-size:13px;display:grid;grid-template-columns:70px 1fr;gap:12px}.l17 .pp .ph{background:#ffe9b3;border-radius:6px;height:86px;display:flex;align-items:center;justify-content:center;font-size:44px}.l17 .pp b{color:#fff}.l17 .q{padding:4px 16px}.l17 .q .lbl{color:#1c1c1e;font-size:14px}`,
+render(V,api){
+  V.innerHTML=`<div class="l17"><div class="ah">🛂 Консульство Кривостана · Анкета</div>
+    <div class="pp"><div class="ph">👩</div><div>ПАСПОРТ / PASSPORT<br>Фамилия/Surname: <b>IVANOVA</b><br>Имя/Given name: <b>ANNA</b><br>Дата рожд./DOB: <b>03.07.1990</b><br>Пол/Sex: <b>Ж/F</b> · № <b>75 1234567</b></div></div>
+    <div class="q"><label class="lbl">1. Имя (латиницей, как в паспорте)</label><input class="inp" data-t="name" placeholder="Например: PETROV" autocapitalize="characters" autocorrect="off"></div>
+    <div class="q"><label class="lbl">2. Фамилия (латиницей, как в паспорте)</label><input class="inp" data-t="sur" placeholder="Например: OLGA" autocapitalize="characters" autocorrect="off"></div>
+    <div class="q"><label class="lbl">3. Дата рождения (формат ГГГГ-ДД-ММ)</label><input class="inp" data-t="dob" placeholder="ГГГГ-ДД-ММ" inputmode="numeric"></div>
+    <div class="q"><label class="lbl">4. Пол</label><div class="row"><label class="cb"><input type="radio" name="sex" value="M" data-t="sex-M" checked> M</label><label class="cb"><input type="radio" name="sex" value="F" data-t="sex-F"> F</label><label class="cb"><input type="radio" name="sex" value="X" data-t="sex-X"> X</label></div></div>
+    <div class="q"><label class="lbl">5. Номер паспорта (без пробелов)</label><input class="inp" data-t="pass" inputmode="numeric"></div>
+    <div class="q"><label class="lbl">6. Цель поездки</label><select class="inp" data-t="goal"><option>Бизнес</option><option>Учёба</option><option>Туризм</option><option>Работа</option><option>Транзит</option></select></div>
+    <div class="q"><label class="lbl">7. Срок пребывания, дней</label><input class="inp" data-t="days" inputmode="numeric" value="30"></div>
+    <div class="q"><label class="cb"><input type="checkbox" data-t="ret"> 8. Отметьте, если вы НЕ планируете НЕ возвращаться на родину</label></div>
+    <div class="q"><label class="lbl">9. Дата прошлого визита. Не оставляйте поле пустым, если вы никогда не были в Кривостане.</label><input class="inp" data-t="prev"></div>
+    <div class="q"><label class="lbl">10. Если вы заполнили поле 9 — оставьте это поле пустым. Номер прошлой визы:</label><input class="inp" data-t="visa" value="КВ-000417"><div class="tiny">Заполнено автоматически для вашего удобства</div></div>
+    <div class="q"><label class="cb"><input type="checkbox" data-t="agree"> 11. Я не согласен с тем, что не ознакомился с правилами въезда</label></div>
+    <div class="p16 row"><button class="btn w" data-t="clear" style="flex:1">Очистить форму</button><button class="btn gr" data-t="send" style="flex:1">Отправить</button></div></div>`;
+  const q=s=>V.querySelector(s);
+  q('[data-t=clear]').onclick=()=>{V.querySelectorAll('input.inp').forEach(i=>i.value='');V.querySelectorAll('input[type=checkbox]').forEach(c=>c.checked=false);api.toast('Форма очищена. Удачи.')};
+  q('[data-t=send]').onclick=()=>{
+    const U=s=>q(s).value.trim().toUpperCase();let e=0;
+    if(U('[data-t=name]')!=='ANNA')e++;
+    if(U('[data-t=sur]')!=='IVANOVA')e++;
+    if(q('[data-t=dob]').value.trim()!=='1990-03-07')e++;
+    if(q('input[name=sex]:checked').value!=='F')e++;
+    if(q('[data-t=pass]').value.replace(/\s/g,'')!=='751234567')e++;
+    if(q('[data-t=goal]').value!=='Туризм')e++;
+    if(q('[data-t=days]').value.trim()!=='7')e++;
+    if(!q('[data-t=ret]').checked)e++;
+    if(!q('[data-t=prev]').value.trim())e++;
+    if(q('[data-t=visa]').value.trim())e++;
+    if(!q('[data-t=agree]').checked)e++;
+    if(e)return api.fail(`Анкета отклонена. Найдено ошибок: ${e}. Где — не скажем. Мы же консульство.`);
+    api.win()};
+}});
+
+/* 18. ЗАПИСЬ К ВРАЧУ */
+LV({id:'doctor',name:'Запись к врачу',
+task:'Запишись к своему <b>участковому терапевту</b> в <b>свою</b> поликлинику на <b>самый ранний свободный слот до 12:00</b>.',
+hints:['Сначала загляни в профиль — там адрес и СНИЛС (а уход из записи сбрасывает её!). У поликлиник мелким шрифтом написано, какие улицы они обслуживают. Дни недели листаются вбок.',
+'Профиль: ул. Садовая, д. 17; СНИЛС 123-456-789 01. Поликлиника <b>№7</b> (обслуживает Садовую, дома 1–25). Врач — «Терапевт участковый». В первой неделе прокрути дни вправо: <b>пятница 27.11, 11:40</b>. Введи СНИЛС.'],
+css:`.l18{padding-bottom:64px}.l18 .nav{position:absolute;left:0;right:0;bottom:0;display:flex;border-top:1px solid #e5e5ea;background:#fafafa}.l18 .nav button{flex:1;border:none;background:none;padding:10px 0;font-size:12px;color:#8e8e93}.l18 .nav button.on{color:#0a66c2;font-weight:700}.l18 .ah{background:#0a66c2;color:#fff}.l18 .days{display:flex;gap:10px;overflow-x:auto;padding:4px 16px 12px;-webkit-overflow-scrolling:touch}.l18 .day{flex:none;width:175px;border:1px solid #e5e5ea;border-radius:12px;padding:10px}.l18 .day .sl{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.l18 .day .sl button{border:1.5px solid #0a66c2;background:#fff;color:#0a66c2;border-radius:8px;padding:7px 10px;font-size:14px}.l18 .cl{width:100%;text-align:left;border:1px solid #e5e5ea;border-radius:12px;background:#fff;padding:12px;margin:8px 0;color:#1c1c1e;font-size:15px}`,
+render(V,api){
+  const CL=[{id:1,n:'Поликлиника №1',a:'ул. Ленина, 2',z:'Обслуживает: ул. Ленина, ул. Мира'},{id:3,n:'Поликлиника №3',a:'ул. Садовая, 40',z:'Обслуживает: ул. Победы, ул. Лесная'},{id:7,n:'Поликлиника №7',a:'пр. Кирова, 9',z:'Обслуживает: ул. Садовая (дома 1–25), ул. Цветочная'}];
+  const DOC=[{id:'paid',n:'Терапевт (платный приём)'},{id:'uch',n:'Терапевт участковый'},{id:'diet',n:'Терапевт-диетолог'}];
+  const W=[[['Пн 23.11',['15:00','16:40']],['Вт 24.11',['14:20']],['Ср 25.11',[]],['Чт 26.11',['13:00']],['Пт 27.11',['11:40','17:00']]],[['Пн 30.11',['08:20','09:00']],['Вт 01.12',['10:20']],['Ср 02.12',['08:00']],['Чт 03.12',[]],['Пт 04.12',['09:40']]]];
+  let tab='home',st={};
+  draw();
+  function draw(){
+    V.innerHTML=`<div class="l18"><div id="c"></div><div class="nav"><button data-t="nav-home" class="${tab==='home'?'on':''}">🏠<br>Главная</button><button data-t="nav-svc" class="${tab==='svc'?'on':''}">🩺<br>Услуги</button><button data-t="nav-prof" class="${tab==='prof'?'on':''}">👤<br>Профиль</button></div></div>`;
+    [['home','nav-home'],['svc','nav-svc'],['prof','nav-prof']].forEach(([t,k])=>V.querySelector(`[data-t=${k}]`).onclick=()=>{if(st.step&&t!=='svc')api.toast('Несохранённые данные записи потеряны 🙃');if(t!=='svc'||tab!=='svc')st={};tab=t;draw()});
+    const c=V.querySelector('#c');
+    if(tab==='home'){c.innerHTML=`<div class="ah">Госкривуслуги</div><div class="p16"><div class="card">📢 Новое: теперь записаться к врачу можно всего за 14 шагов!</div><div class="card" style="margin-top:10px">💡 Не забудьте обновить данные профиля до 2019 года.</div></div>`;return}
+    if(tab==='prof'){c.innerHTML=`<div class="ah">Профиль</div><div class="p16" style="line-height:1.8"><b>Иванова Анна Сергеевна</b><br>Адрес регистрации: г. Кривогорск, ул. Садовая, д. 17, кв. 4<br>СНИЛС: <b>123-456-789 01</b><br>Полис ОМС: 7700 0000 1111 2222<br>Телефон: +7 9•• •••-12-34</div>`;return}
+    if(!st.step){c.innerHTML=`<div class="ah">Услуги</div><button class="li" data-t="svc-doc">Запись к врачу<span class="chev">›</span></button><button class="li" data-t="x">Справка о том, что вы — это вы<span class="chev">›</span></button><button class="li" data-t="x">Штрафы за неправильное заполнение<span class="chev">›</span></button>`;
+      c.querySelector('[data-t=svc-doc]').onclick=()=>{st={step:1};draw()};c.querySelectorAll('[data-t=x]').forEach(b=>b.onclick=()=>api.toast('Услуга временно недоступна до следующей реформы.'));return}
+    if(st.step===1){c.innerHTML=`<div class="ah">Шаг 1 из 4 · Поликлиника</div><div class="p16">${CL.map(x=>`<button class="cl" data-t="cl-${x.id}" data-id="${x.id}"><b>${x.n}</b><br>${x.a}<div class="tiny" style="margin-top:4px">${x.z}</div></button>`).join('')}</div>`;
+      c.querySelectorAll('[data-id]').forEach(b=>b.onclick=()=>{st.cl=+b.dataset.id;st.step=2;draw()});return}
+    if(st.step===2){c.innerHTML=`<div class="ah">Шаг 2 из 4 · Специалист</div><div class="p16">${DOC.map(d=>`<button class="cl" data-t="doc-${d.id}" data-id="${d.id}">${d.n}</button>`).join('')}</div>`;
+      c.querySelectorAll('[data-id]').forEach(b=>b.onclick=()=>{st.doc=b.dataset.id;st.step=3;st.w=0;draw()});return}
+    if(st.step===3){const w=W[st.w];c.innerHTML=`<div class="ah">Шаг 3 из 4 · Время</div><div class="p16" style="padding-bottom:6px"><b>${st.w===0?'Неделя 23–27 ноября':'Неделя 30 ноября – 4 декабря'}</b></div>
+      <div class="days">${w.map(([d,s],di)=>`<div class="day"><b>${d}</b><div class="sl">${s.length?s.map(t=>`<button data-t="slot-${d.split(' ')[1]}-${t}" data-d="${d}" data-s="${t}">${t}</button>`).join(''):'<span class="muted" style="font-size:13px">Нет мест</span>'}</div></div>`).join('')}</div>
+      <div class="p16 row"><button class="btn gr" data-t="wprev" ${st.w===0?'disabled':''}>‹ Пред.</button><span class="sp" style="flex:1"></span><button class="btn gr" data-t="wnext" ${st.w===1?'disabled':''}>След. неделя ›</button></div>`;
+      c.querySelector('[data-t=wprev]').onclick=()=>{st.w=0;draw()};c.querySelector('[data-t=wnext]').onclick=()=>{st.w=1;draw()};
+      c.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>{st.slot=b.dataset.d+' '+b.dataset.s;st.step=4;draw()});return}
+    if(st.step===4){c.innerHTML=`<div class="ah">Шаг 4 из 4 · Подтверждение</div><div class="p16"><div class="card">${CL.find(x=>x.id===st.cl).n}<br>${DOC.find(d=>d.id===st.doc).n}<br><b>${st.slot}</b></div>
+      <label class="lbl">СНИЛС</label><input class="inp" data-t="snils" inputmode="numeric" placeholder="XXX-XXX-XXX YY"><label class="lbl">Телефон</label><input class="inp" value="+7 9•• •••-12-34" disabled>
+      <button class="btn w" data-t="book" style="margin-top:14px">Записаться</button></div>`;
+      const sn=c.querySelector('[data-t=snils]');sn.oninput=()=>{const d=sn.value.replace(/\D/g,'').slice(0,11);let o=d.slice(0,3);if(d.length>3)o+='-'+d.slice(3,6);if(d.length>6)o+='-'+d.slice(6,9);if(d.length>9)o+=' '+d.slice(9);sn.value=o};
+      c.querySelector('[data-t=book]').onclick=()=>{const reset=()=>{st={step:1};draw()};
+        if(sn.value.replace(/\D/g,'')!=='12345678901'){api.fail('СНИЛС не совпадает с данными профиля. Запись сброшена.');st={};return draw()}
+        if(st.cl!==7){api.fail('Отказ: вы не прикреплены к этой поликлинике. Сверьте свой адрес с зоной обслуживания.');return reset()}
+        if(st.doc!=='uch'){api.fail(st.doc==='paid'?'Это платный приём: 3 500 ₽. Нужен участковый.':'Диетолог посоветовал меньше нервничать. А нужен участковый терапевт.');return reset()}
+        if(st.slot!=='Пт 27.11 11:40'){api.fail('Записано, но есть более ранний свободный слот до 12:00. Вы все дни посмотрели?');return reset()}
+        api.win()}}
+  }
+}});
+
+/* ===================== МИР 4: ГАДЖЕТЫ ===================== */
+
+/* 19. ВИДЕОПЛЕЕР */
+LV({id:'video',name:'Видеоплеер',
+task:'Посмотри видео: пропусти рекламу (не переходя на сайт), запусти воспроизведение в <b>1080p</b>, на <b>обычной скорости</b>, <b>со звуком</b> и с <b>русскими субтитрами — не автоматическими</b>.',
+hints:['Большая кнопка в рекламе — часть рекламы; настоящая маленькая появится в углу. Значок на кнопке воспроизведения тут показывает текущее состояние, а не действие — смотри, движется ли картинка. 1080p открывается только при определённой скорости. И «не выключен звук» ≠ «есть звук».',
+'Подожди 5 секунд, нажми маленькое «Пропустить ×» в углу. ⚙ → Скорость «Обычная» → Качество 1080p → Субтитры «Русский». Громкость: передвинь ползунок больше 0. Нажми кнопку воспроизведения, чтобы котик поехал.'],
+css:`.l19{padding:12px}.l19 .pl{position:relative;background:#000;border-radius:12px;overflow:hidden;aspect-ratio:16/9;color:#fff}.l19 .scr{position:absolute;inset:0;background:linear-gradient(120deg,#2b5876,#4e4376,#c33764);background-size:300% 300%}.l19 .scr.play{animation:l19g 4s linear infinite}.l19 .cat{position:absolute;bottom:22%;font-size:48px;left:10%}.l19 .scr.play .cat{animation:l19c 3s linear infinite}@keyframes l19g{to{background-position:300% 0}}@keyframes l19c{50%{left:75%;transform:scaleX(-1)}}.l19 .sub{position:absolute;bottom:14px;left:0;right:0;text-align:center;font-size:15px;text-shadow:0 1px 3px #000}.l19 .ad{position:absolute;inset:0;background:linear-gradient(135deg,#ffde00,#ff6a00);display:flex;flex-direction:column;align-items:center;justify-content:center;color:#111;text-align:center;padding:10px}.l19 .ad .bigb{background:#111;color:#ffde00;border:none;border-radius:999px;padding:14px 24px;font-size:18px;font-weight:900}.l19 .skip{position:absolute;top:8px;right:8px;background:rgba(0,0,0,.55);color:#fff;border:none;border-radius:6px;padding:5px 9px;font-size:11px}.l19 .ctl{display:flex;align-items:center;gap:10px;padding:10px 4px}.l19 .ctl button{border:none;background:#f2f2f7;border-radius:10px;width:46px;height:42px;font-size:20px;padding:0}.l19 .q{position:absolute;top:8px;left:10px;font-size:11px;background:#0008;padding:2px 6px;border-radius:4px}`,
+render(V,api){
+  const S={ad:true,play:false,speed:'1.25',q:'360p',subs:'Выкл',vol:0,mute:false,t:0};
+  V.innerHTML=`<div class="l19"><div class="pl"><div class="scr" id="scr"><div class="cat">🐈</div><div class="sub" id="sub"></div><div class="q" id="qq"></div></div>
+    <div class="ad" id="ad"><div style="font-weight:900;font-size:20px">КРИВОКОЛА 🥤</div><div style="font-size:13px;margin:4px 0 10px">Вкус, который невозможно пропустить</div><button class="bigb" data-t="fakeskip">ПРОПУСТИТЬ РЕКЛАМУ ▸▸</button><div style="font-size:9px;margin-top:4px;opacity:.6">реклама · перейти на сайт</div><button class="skip" data-t="skip">Пропустить через 5</button></div></div>
+    <div class="ctl"><button data-t="play" id="pb">⏸</button><span id="tm" style="font-variant-numeric:tabular-nums;font-size:14px">0:00</span><span style="flex:1"></span><button data-t="mute" id="mb">🔊</button><input type="range" min="0" max="100" value="0" data-t="vol" style="width:100px"><button data-t="gear">⚙</button></div>
+    <div class="tiny">Котик: «Если я двигаюсь — видео идёт».</div></div>`;
+  const q=s=>V.querySelector(s);let skipIn=5;
+  const ticker=api.every(()=>{if(S.ad){if(skipIn>0){skipIn--;q('[data-t=skip]').textContent=skipIn?`Пропустить через ${skipIn}`:'Пропустить ×'}return}if(S.play){S.t++;q('#tm').textContent=`${Math.floor(S.t/60)}:${String(S.t%60).padStart(2,'0')}`}},1000);
+  const draw=()=>{q('#scr').classList.toggle('play',S.play);q('#pb').textContent=S.play?'▶':'⏸';q('#mb').textContent=S.mute?'🔇':S.vol===0?'🔈':'🔊';
+    q('#sub').textContent=S.subs==='Выкл'?'':S.subs==='Русский'?'— Мяу. Это субтитры.':S.subs==='Русский (автоматические)'?'— Мяу-мяу эта сабы ты.':'— Meow. These are subtitles.';q('#qq').textContent=`${S.q} · ${S.speed==='Обычная'?'1x':S.speed+'x'}`;check()};
+  function check(){if(!S.ad&&S.play&&S.speed==='Обычная'&&S.q==='1080p'&&S.subs==='Русский'&&S.vol>0&&!S.mute){api.later(()=>{if(!S.ad&&S.play&&S.speed==='Обычная'&&S.q==='1080p'&&S.subs==='Русский'&&S.vol>0&&!S.mute)api.win()},900)}}
+  q('[data-t=fakeskip]').onclick=()=>api.fail('Вы перешли на сайт КривоКолы и купили ящик газировки. Это был рекламный баннер.');
+  q('[data-t=skip]').onclick=()=>{if(skipIn>0)return;S.ad=false;q('#ad').remove();draw()};
+  q('[data-t=play]').onclick=()=>{if(S.ad)return api.toast('Сначала досмотрите рекламу. Или пропустите.');S.play=!S.play;draw()};
+  q('[data-t=mute]').onclick=()=>{S.mute=!S.mute;draw()};
+  q('[data-t=vol]').oninput=e=>{S.vol=+e.target.value;draw()};
+  q('[data-t=gear]').onclick=()=>{
+    const SP=['0.25','0.5','0.75','Обычная','1.25','1.5','2'],QL=['144p','360p','480p','720p','1080p'],SB=['Выкл','Русский (автоматические)','English','Русский'];
+    const s=api.sheet('<div id="g"></div>');
+    const g=()=>{s.querySelector('#g').innerHTML=`<h3>Настройки</h3>
+      <div class="lbl">Скорость</div><div class="row" style="flex-wrap:wrap;gap:6px">${SP.map(x=>`<button class="chip ${S.speed===x?'on':''}" data-t="sp-${x}" data-sp="${x}">${x}</button>`).join('')}</div>
+      <div class="lbl">Качество</div><div class="row" style="flex-wrap:wrap;gap:6px">${QL.map(x=>`<button class="chip ${S.q===x?'on':''}" data-t="q-${x}" data-q="${x}" ${x==='1080p'&&S.speed!=='Обычная'?'style="opacity:.35"':''}>${x}</button>`).join('')}</div>
+      ${S.speed!=='Обычная'?'<div class="tiny" style="margin-top:4px">1080p доступно только при обычной скорости</div>':''}
+      <div class="lbl">Субтитры</div><div class="row" style="flex-wrap:wrap;gap:6px">${SB.map((x,i)=>`<button class="chip ${S.subs===x?'on':''}" data-t="sb-${i}" data-sb="${x}">${x}</button>`).join('')}</div>
+      <button class="btn w gr" data-t="gclose" style="margin-top:16px">Готово</button>`;
+      s.querySelectorAll('[data-sp]').forEach(b=>b.onclick=()=>{S.speed=b.dataset.sp;if(S.speed!=='Обычная'&&S.q==='1080p')S.q='720p';g();draw()});
+      s.querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>{if(b.dataset.q==='1080p'&&S.speed!=='Обычная')return api.toast('1080p недоступно на этой скорости');S.q=b.dataset.q;g();draw()});
+      s.querySelectorAll('[data-sb]').forEach(b=>b.onclick=()=>{S.subs=b.dataset.sb;g();draw()});
+      s.querySelector('[data-t=gclose]').onclick=s.close};
+    g()};
+  draw();
+}});
+
+/* 20. ТЕРМОСТАТ */
+LV({id:'thermo',name:'Умный термостат',
+task:'Сделай в гостиной ровно <b>22,0 °C</b> в режиме <b>обогрева</b>. Нажми «Применить».',
+hints:['Сейчас термостат показывает не Цельсии. Единицы меняются в настройках, но не сразу на нужные. Там же есть ограничение с хитрой подписью. И проверь, куда на самом деле ведут стрелки.',
+'⚙ → нажимай «Единицы», пока не станет °C (F → K → C). Сними галочку «Не снимать эко-ограничение». Закрой. Стрелка ▼ здесь <b>повышает</b> температуру: доведи до 22,0. Выбери «🔥 Обогрев» и «Применить».'],
+css:`.l20{padding:16px;text-align:center}.l20 .dial{width:230px;height:230px;border-radius:50%;margin:10px auto;background:radial-gradient(circle,#fff 58%,transparent 59%),conic-gradient(#ff9500 0 var(--p),#e5e5ea var(--p) 75%,transparent 75%);transform:rotate(-135deg);display:flex;align-items:center;justify-content:center}.l20 .dial>div{transform:rotate(135deg)}.l20 .val{font-size:56px;font-weight:200}.l20 .arr{display:flex;justify-content:center;gap:24px}.l20 .arr button{width:70px;height:56px;border-radius:14px;border:none;background:#f2f2f7;font-size:24px}`,
+render(V,api){
+  const S={u:'F',v:68,mode:'cool',eco:true};
+  const toC=(u,v)=>u==='C'?v:u==='F'?(v-32)*5/9:v-273.15;
+  const fromC=(u,c)=>u==='C'?Math.round(c*2)/2:u==='F'?Math.round(c*9/5+32):Math.round(c+273.15);
+  const unitLbl={F:'°F',K:'K',C:'°C'},step={F:1,K:1,C:0.5};
+  V.innerHTML=`<div class="l20"><div class="row" style="justify-content:space-between"><b>🏠 Гостиная</b><button class="btn ghost" data-t="gear" style="font-size:22px">⚙</button></div>
+    <div class="dial" id="dial"><div><div class="val" id="val"></div><div class="muted" id="sub" style="font-size:13px"></div></div></div>
+    <div class="arr"><button data-t="up">▲</button><button data-t="down">▼</button></div>
+    <div class="row" style="justify-content:center;gap:8px;margin:16px 0;flex-wrap:wrap"><button class="chip" data-t="m-cool" data-m="cool">❄️ Охлаждение</button><button class="chip" data-t="m-heat" data-m="heat">🔥 Обогрев</button><button class="chip" data-t="m-auto" data-m="auto">♻️ Авто</button></div>
+    <button class="btn w" data-t="apply">Применить</button><div class="tiny" style="margin-top:8px">Сейчас в комнате: 18 °C (или что-то вроде того)</div></div>`;
+  const q=s=>V.querySelector(s);
+  const draw=()=>{const vs=S.u==='C'?S.v.toFixed(1).replace('.',','):String(S.v);q('#val').textContent=vs+unitLbl[S.u];q('#sub').textContent=S.mode==='cool'?'Охлаждение':S.mode==='heat'?'Обогрев':'Авто';
+    const c=toC(S.u,S.v);q('#dial').style.setProperty('--p',Math.max(0,Math.min(75,(c-10)/20*75))+'%');V.querySelectorAll('[data-m]').forEach(b=>b.classList.toggle('on',b.dataset.m===S.mode))};
+  const change=d=>{const nv=+(S.v+d*step[S.u]).toFixed(1);const c=toC(S.u,nv);if(S.eco&&c>20.01)return api.toast('Эко-ограничение: не больше 20 °C. Заботимся о планете (и счетах).');if(c<5||c>32)return api.toast('Термостат так не умеет.');S.v=nv;draw()};
+  q('[data-t=up]').onclick=()=>change(-1);q('[data-t=down]').onclick=()=>change(1);
+  V.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{S.mode=b.dataset.m;draw()});
+  q('[data-t=gear]').onclick=()=>{const s=api.sheet(`<h3>Настройки термостата</h3><div class="li" style="padding:12px 0">Единицы<button class="chip" data-t="unit">${unitLbl[S.u]}</button></div>
+    <label class="cb"><input type="checkbox" data-t="eco" ${S.eco?'checked':''}> Не снимать эко-ограничение (макс. 20 °C)</label><button class="btn w gr" data-t="sclose" style="margin-top:10px">Закрыть</button>`);
+    s.querySelector('[data-t=unit]').onclick=e=>{const nu={F:'K',K:'C',C:'F'}[S.u];const c=toC(S.u,S.v);S.u=nu;S.v=fromC(nu,c);e.target.textContent=unitLbl[nu];draw()};
+    s.querySelector('[data-t=eco]').onchange=e=>S.eco=e.target.checked;s.querySelector('[data-t=sclose]').onclick=s.close};
+  q('[data-t=apply]').onclick=()=>{const c=toC(S.u,S.v);
+    if(S.mode!=='heat')return api.fail(S.mode==='cool'?'Включено охлаждение. В ноябре. Смело.':'Режим «Авто» решил, что вам и так тепло.');
+    if(Math.abs(c-22)>0.001)return api.fail(`Термостат выставил ${S.u==='C'?'':S.v+unitLbl[S.u]+' = '}${c.toFixed(2).replace('.',',')} °C. А нужно ровно 22,0 °C.`);
+    api.win()};
+  draw();
+}});
+
+/* 21. БУДИЛЬНИК */
+LV({id:'alarm',name:'Будильник',
+task:'Поставь будильник на <b>7:30</b> по <b>будним дням</b> со звуком «<b>Петух</b>». Точное время — платная функция, так что выкручивайся.',
+hints:['Посмотри на часы в статус-баре и посчитай, через сколько нужно проснуться. И прочитай мелкую строчку над днями недели: с какого дня здесь начинается неделя?',
+'Сейчас 22:47. До 7:30 — <b>8 ч 43 мин</b>: вкладка «Таймер сна». Неделя начинается с воскресенья: дни «В П В С Ч П С» — выбери со <b>2-го по 6-й</b> (П В С Ч П). Звук «Петух». «Сохранить» — справа вверху.'],
+css:`.l21 .tabs{display:flex;margin:12px 16px;background:#e5e5ea;border-radius:10px;padding:3px}.l21 .tabs button{flex:1;border:none;background:none;padding:8px;border-radius:8px;font-size:14px}.l21 .tabs button.on{background:#fff;font-weight:700}.l21 .stp{display:flex;align-items:center;justify-content:center;gap:6px;margin:8px 0}.l21 .stp button{min-width:46px;height:44px;border-radius:10px;border:none;background:#f2f2f7;font-size:16px}.l21 .stp b{font-size:34px;min-width:64px;text-align:center;font-variant-numeric:tabular-nums}.l21 .days{display:flex;gap:6px;justify-content:center}.l21 .days button{width:40px;height:40px;border-radius:50%;border:1.5px solid #d1d1d6;background:#fff;font-size:15px;padding:0}.l21 .days button.on{background:#ff9500;border-color:#ff9500;color:#fff}`,
+render(V,api){
+  api.sb('22:47');
+  let tab='timer',H=0,M=0,days=new Set(),snd='Тишина 🔇';const DL=['В','П','В','С','Ч','П','С'],DN=['Вс','Пн','Вт','Ср','Чт','Пт','Сб'];
+  draw();
+  function draw(){
+    V.innerHTML=`<div class="l21"><div class="ah"><button class="btn ghost" data-t="cancel-top">Отмена</button><span class="sp"></span>Часы<span class="sp"></span><button class="btn ghost" data-t="save" style="font-size:14px">Сохранить</button></div>
+      <div class="tabs"><button class="${tab==='alarm'?'on':''}" data-t="tab-alarm">Будильник</button><button class="${tab==='timer'?'on':''}" data-t="tab-timer">Таймер сна</button></div><div id="c"></div></div>`;
+    V.querySelector('[data-t=tab-alarm]').onclick=()=>{tab='alarm';draw()};V.querySelector('[data-t=tab-timer]').onclick=()=>{tab='timer';draw()};
+    V.querySelector('[data-t=cancel-top]').onclick=()=>api.toast('Отменено. Нечего было отменять.');
+    V.querySelector('[data-t=save]').onclick=save;
+    const c=V.querySelector('#c');
+    if(tab==='alarm'){c.innerHTML=`<div class="li"><span style="font-size:30px;font-weight:300;color:#c7c7cc">6:00</span><span class="muted">Отключён</span></div><div class="p16"><button class="btn w" data-t="add">+ Новый будильник</button></div>`;
+      c.querySelector('[data-t=add]').onclick=()=>{const s=api.sheet(`<h3>Выбор точного времени 🔒</h3><p>Функция доступна в «Часы Pro» — 499 ₽/мес. Бесплатно можно поставить таймер сна.</p><button class="btn o w" data-t="buy">Купить Pro</button><button class="btn gr w" data-t="no">Не сейчас</button>`);
+        s.querySelector('[data-t=buy]').onclick=()=>{s.close();api.fail('Подписка Pro оформлена: 499 ₽/мес, отмена — через отдел писем.')};s.querySelector('[data-t=no]').onclick=s.close};return}
+    c.innerHTML=`<div class="p16" style="text-align:center"><div class="muted" style="font-size:14px">Разбудить меня через</div>
+      <div class="stp"><button data-t="h-">−</button><b id="h">${H}</b><button data-t="h+">+</button><span>ч</span></div>
+      <div class="stp"><button data-t="m-10">−10</button><button data-t="m-1">−1</button><b id="m">${String(M).padStart(2,'0')}</b><button data-t="m+1">+1</button><button data-t="m+10">+10</button><span>мин</span></div>
+      <div class="tiny">Время срабатывания будет показано после сохранения</div>
+      <div class="lbl" style="text-align:left">Повторять</div><div class="tiny" style="text-align:left;margin-bottom:6px">Неделя начинается с воскресенья · регион: США</div>
+      <div class="days">${DL.map((d,i)=>`<button class="${days.has(i)?'on':''}" data-t="day-${i}" data-d="${i}">${d}</button>`).join('')}</div>
+      <div class="lbl" style="text-align:left">Звук</div><select class="inp" data-t="snd">${['Тишина 🔇','Птички','Петух','Сирена'].map(s=>`<option ${s===snd?'selected':''}>${s}</option>`).join('')}</select>
+      <button class="btn gr w" data-t="cancel" style="margin-top:18px;padding:16px">Отмена</button></div>`;
+    const set=()=>{c.querySelector('#h').textContent=H;c.querySelector('#m').textContent=String(M).padStart(2,'0')};
+    c.querySelector('[data-t="h-"]').onclick=()=>{H=(H+23)%24;set()};c.querySelector('[data-t="h+"]').onclick=()=>{H=(H+1)%24;set()};
+    [['m-10',-10],['m-1',-1],['m+1',1],['m+10',10]].forEach(([k,d])=>c.querySelector(`[data-t="${k}"]`).onclick=()=>{M=(M+d+60)%60;set()});
+    c.querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>{const i=+b.dataset.d;days.has(i)?days.delete(i):days.add(i);b.classList.toggle('on')});
+    c.querySelector('[data-t=snd]').onchange=e=>snd=e.target.value;
+    c.querySelector('[data-t=cancel]').onclick=()=>{H=0;M=0;days=new Set();snd='Тишина 🔇';draw();api.toast('Настройки сброшены. Вы нажали большую кнопку.')}}
+  function save(){if(tab!=='timer')return api.toast('Нечего сохранять');
+    const tot=22*60+47+H*60+M,hh=Math.floor(tot/60)%24,mm=tot%60,when=`${hh}:${String(mm).padStart(2,'0')}`;
+    if(H*60+M!==8*60+43)return api.fail(`Будильник сработает в ${when}. А нужно в 7:30.`);
+    const want=[1,2,3,4,5];if(days.size!==5||!want.every(d=>days.has(d)))return api.fail(`Повтор: ${[...days].sort().map(d=>DN[d]).join(', ')||'однократно'}. Это не будни.`);
+    if(snd!=='Петух')return api.fail(`Звук: «${snd}». Петух бы не одобрил.`);
+    api.win()}
+}});
+
+/* 22. НАСТРОЙКИ ТЕЛЕФОНА */
+LV({id:'settings',name:'Настройки телефона',
+task:'Приведи телефон в состояние: <b>Wi-Fi выкл</b>, <b>Bluetooth вкл</b>, <b>сотовые данные выкл</b>, <b>энергосбережение вкл</b>, <b>геолокация выкл</b>. Авиарежим — как хочешь.',
+hints:['Переключатели здесь связаны: телефон «заботливо» включает одно, когда ты выключаешь другое. Читай всплывающие сообщения. Есть один режим, в котором часть этой заботы перестаёт работать.',
+'Включи <b>Авиарежим</b> (выключит Wi-Fi, BT и данные и не даст им «помогать» друг другу). Затем выключи геолокацию, включи энергосбережение (оно выключит BT) и после этого включи Bluetooth.'],
+css:`.l22{background:#f2f2f7;min-height:64vh}.l22 .ah{background:#f2f2f7;border:none}.l22 .gr2{margin:10px 16px;border-radius:12px;overflow:hidden}.l22 .gr2 .li:last-child{border-bottom:none}.l22 .ic{display:inline-flex;width:30px;height:30px;border-radius:7px;align-items:center;justify-content:center;margin-right:10px;font-size:16px}.l22 .val{color:#8e8e93;font-size:15px}.l22 .desc{font-size:13px;color:#8e8e93;margin:0 28px}`,
+render(V,api){
+  const S={air:false,W:true,B:true,D:true,E:false,G:true};
+  const N={W:'Wi-Fi',B:'Bluetooth',D:'Сотовые данные',E:'Энергосбережение',G:'Службы геолокации'};
+  let page='main';
+  function setK(k,v){
+    if(k==='air'){S.air=v;if(v){S.W=false;S.B=false;S.D=false;api.toast('Авиарежим: Wi-Fi, Bluetooth и сотовые данные выключены.')}else{S.W=true;S.D=true;api.toast('Авиарежим выключен: Wi-Fi и сотовые данные снова включены.')}}
+    else if(k==='W'){S.W=v;if(!v&&!S.air){S.D=true;api.toast('Wi-Fi-помощник: раз Wi-Fi нет, мы включили сотовые данные 📶')}}
+    else if(k==='D'){if(v&&S.air)return api.toast('Недоступно в авиарежиме.');S.D=v;if(!v){S.G=true;api.toast('Без интернета геолокации нужен GPS — мы включили службы геолокации 📍')}}
+    else if(k==='G'){S.G=v;if(!v&&!S.air){S.D=true;api.toast('Для точности геолокации мы включили сотовые данные 🛰')}}
+    else if(k==='E'){S.E=v;if(v){S.B=false;api.toast('Энергосбережение выключило Bluetooth 🔋')}}
+    else if(k==='B'){S.B=v}
+    draw();
+    if(!S.W&&S.B&&!S.D&&S.E&&!S.G)api.later(()=>{if(!S.W&&S.B&&!S.D&&S.E&&!S.G)api.win()},700);
+  }
+  const row=(k,label,ic,col)=>`<div class="li"><span><span class="ic" style="background:${col}">${ic}</span>${label}</span><button class="tg ${S[k]?'on':''}" data-t="tg-${k}" data-k="${k}"></button></div>`;
+  const nav=(p,label,ic,col,val)=>`<button class="li" data-t="go-${p}" data-p="${p}"><span><span class="ic" style="background:${col}">${ic}</span>${label}</span><span class="val">${val} <span class="chev">›</span></span></button>`;
+  const onoff=v=>v?'Вкл':'Выкл';
+  function draw(){
+    let c='';
+    if(page==='main')c=`<div class="ah" style="font-size:28px">Настройки</div><div class="gr2">${row('air','Авиарежим','✈️','#ff9500')}${nav('W','Wi-Fi','📶','#007aff',onoff(S.W))}${nav('B','Bluetooth','ᛒ','#007aff',onoff(S.B))}${nav('D','Сотовая связь','📡','#34c759','')}</div>
+      <div class="gr2">${nav('dnd','Не беспокоить','🌙','#5856d6','')}${nav('E','Аккумулятор','🔋','#34c759','')}${nav('priv','Конфиденциальность','✋','#007aff','')}</div>`;
+    else if(page==='priv')c=`<div class="ah"><button class="btn ghost" data-t="back">‹ Настройки</button></div><div class="gr2">${nav('G','Службы геолокации','📍','#007aff',onoff(S.G))}${nav('x','Отслеживание','👁','#ff3b30','')}</div>`;
+    else if(page==='dnd'||page==='x')c=`<div class="ah"><button class="btn ghost" data-t="back">‹ Назад</button></div><p class="desc">Здесь нет ничего полезного. Как и в половине настроек.</p>`;
+    else{const extra={W:'Wi-Fi-помощник автоматически включает сотовые данные, когда Wi-Fi выключен.',B:'Bluetooth можно включить даже в авиарежиме.',D:'Отключение данных включает GPS, чтобы карты работали.',E:'Энергосбережение отключает Bluetooth.',G:'Геолокации нужны сотовые данные. Мы их включим. Если сможем.'}[page];
+      c=`<div class="ah"><button class="btn ghost" data-t="back">‹ ${page==='G'?'Конфиденциальность':'Настройки'}</button></div><div class="gr2">${row(page,N[page],'⚙️','#8e8e93')}</div><p class="desc">${extra}</p>`}
+    V.innerHTML=`<div class="l22">${c}</div>`;
+    V.querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>setK(b.dataset.k,!S[b.dataset.k]));
+    V.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{page=b.dataset.p;draw()});
+    const bk=V.querySelector('[data-t=back]');if(bk)bk.onclick=()=>{page=page==='G'||page==='x'?'priv':'main';draw()};
+  }
+  draw();
+}});
+
+/* 23. СМАРТ-ТВ */
+LV({id:'tv',name:'Wi-Fi на телевизоре',
+task:'Подключи телевизор к сети <b>Кривой_5G</b>, пароль <b>kot_2026</b>. Управление — только пультом. В пульте почти сели батарейки.',
+hints:['Нажатий мало, а путь по экранной клавиатуре долгий. Попробуй уйти за край клавиатуры — курсор выходит с другой стороны. В списке сетей тоже.',
+'Сеть «Кривой_5G» — третья (▼▼ OK). Курсор проходит сквозь края: от «o» к «t» быстрее ◀◀ через левый край, от «_» к «2» — ▼ и ▶▶▶ через правый край, от «2» к «6» — ◀◀◀ через край. Кнопка ✓ — в правом нижнем углу.'],
+css:`.l23{background:#0d1117;color:#e6edf3;padding:14px;min-height:64vh}.l23 .tvs{background:#161b22;border:6px solid #000;border-radius:10px;padding:14px;min-height:250px}.l23 .net{padding:9px 12px;border-radius:8px;margin:4px 0;border:2px solid transparent}.l23 .net.cur{border-color:#58a6ff;background:#1f2a3a}.l23 .kb{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:10px}.l23 .kb div{text-align:center;padding:7px 0;border-radius:6px;background:#21262d;font-family:monospace;font-size:16px;border:2px solid transparent}.l23 .kb div.cur{border-color:#58a6ff;background:#1f6feb;color:#fff}.l23 .pw{font-family:monospace;font-size:20px;background:#0d1117;border-radius:6px;padding:8px 10px;min-height:40px;letter-spacing:1px}.l23 .rem{margin:14px auto 0;width:230px;background:#2d333b;border-radius:30px;padding:14px;display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.l23 .rem button{height:52px;border-radius:14px;border:none;background:#444c56;color:#fff;font-size:20px}.l23 .rem .ok{border-radius:50%;background:#58a6ff}.l23 .bat{text-align:right;font-size:14px}`,
+render(V,api){
+  const NETS=['KpuBou_5G','Кривой_5G_Guest','Кривой_5G','Кривой_2.4G','Соседский_Бесплатный'];
+  const KB=['abcdefg','hijklmn','opqrstu','vwxyz_-','1234567','890.@⌫✓'].map(r=>r.split(''));
+  const MAX=42;let bat,ph,ni,net,r,c,pw;
+  const reset=()=>{bat=MAX;ph='net';ni=0;net=null;r=0;c=0;pw='';draw()};
+  function draw(){
+    V.innerHTML=`<div class="l23"><div class="bat">🔋 Батарейка пульта: <b data-t="bat">${bat}</b> нажатий</div><div class="tvs">${ph==='net'?`<b>Выберите сеть Wi-Fi</b>${NETS.map((n,i)=>`<div class="net ${i===ni?'cur':''}">📶 ${n}</div>`).join('')}`:`<b>Пароль для «${net}»</b><div class="pw" data-t="pw">${pw.replace(/ /g,'␣')}<span style="opacity:.5">▏</span></div><div class="kb">${KB.map((row,ri)=>row.map((k,ci)=>`<div class="${ri===r&&ci===c?'cur':''}">${k}</div>`).join('')).join('')}</div>`}</div>
+      <div class="rem"><span></span><button data-t="U">▲</button><span></span><button data-t="L">◀</button><button class="ok" data-t="OK">OK</button><button data-t="R">▶</button><button data-t="BK" style="font-size:13px">Назад</button><button data-t="D">▼</button><button data-t="HM" style="font-size:13px">Home</button></div>
+      <div class="tiny" style="text-align:center;margin-top:8px;color:#8b949e">Экран телевизора не сенсорный 🙂</div></div>`;
+    V.querySelectorAll('.rem button').forEach(b=>b.onclick=()=>press(b.dataset.t));
+    V.querySelector('.tvs').onclick=()=>api.toast('Это телевизор, а не планшет. Пульт — ниже.');
+  }
+  function press(k){
+    bat--;
+    if(ph==='net'){if(k==='U')ni=(ni+NETS.length-1)%NETS.length;else if(k==='D')ni=(ni+1)%NETS.length;else if(k==='OK'){net=NETS[ni];ph='kb'}else if(k==='HM'){api.toast('Главный экран. Реклама. Назад.')}}
+    else{if(k==='U')r=(r+5)%6;else if(k==='D')r=(r+1)%6;else if(k==='L')c=(c+6)%7;else if(k==='R')c=(c+1)%7;else if(k==='BK'){pw=pw.slice(0,-1)}else if(k==='HM'){ph='net';pw='';api.toast('Вы вышли на главный экран. Пароль стёрт 🙃')}
+      else if(k==='OK'){const ch=KB[r][c];if(ch==='⌫')pw=pw.slice(0,-1);else if(ch==='✓'){if(net==='Кривой_5G'&&pw==='kot_2026'){draw();return api.win()}api.fail(net!=='Кривой_5G'?`Подключение к «${net}» не удалось. Это не та сеть.`:'Неверный пароль. Пульт обиделся и сбросил всё.');return reset()}else pw+=ch}}
+    if(bat<=0){api.fail('Батарейки сели 🪫 Нашли новые в ящике. Начинаем сначала — экономнее!');return reset()}
+    draw();
+  }
+  reset();
+}});
+
+/* 24. КАРТА */
+LV({id:'map',name:'Ближайшая аптека',
+task:'Сейчас <b>вторник, 14:20</b>. Проложи <b>пешеходный</b> маршрут из дома до <b>ближайшей открытой</b> аптеки.',
+hints:['Не верь зелёным плашкам «Открыто» — читай часы работы и мелкие примечания в карточке аптеки. Сравни расстояния. Значок пешехода здесь не очевиден.',
+'«Здоровье» — перерыв 14:00–15:00. «Аптека 24» — закрыта на ремонт. «ФармаПлюс» — вторник выходной. «Ночная» открыта, но 1,2 км. Ближайшая открытая — <b>«Кривая аптека»</b> (700 м). Режим — 🦶.'],
+css:`.l24{position:relative}.l24 svg{display:block;width:100%;height:auto;background:#eef2e6}.l24 .pin{cursor:pointer}.l24 .card{position:relative;margin:12px;box-shadow:0 4px 20px #0002}.l24 .bdg{display:inline-block;font-size:12px;padding:2px 8px;border-radius:6px;background:#e4f7ea;color:#1b7a3d;margin-left:6px}.l24 .modes{display:flex;gap:8px;margin:10px 0}.l24 .modes button{flex:1;border:1.5px solid #d1d1d6;background:#fff;border-radius:10px;padding:10px 0;font-size:22px}.l24 .modes button.on{border-color:#007aff;background:#eaf2ff}`,
+render(V,api){
+  api.sb('Вт 14:20');
+  const P=[{id:'A',n:'Аптека «Здоровье»',x:150,y:150,d:'300 м',h:'Ежедневно 9:00–21:00',note:'Перерыв 14:00–15:00',bdg:'Открыто',why:'Аптека на перерыве до 15:00. Плашка «Открыто» врёт.'},
+    {id:'B',n:'Аптека 24',x:250,y:200,d:'450 м',h:'Круглосуточно',note:'Временно закрыто: ремонт до 1 декабря',bdg:'Круглосуточно',why:'Закрыто на ремонт — мелкий шрифт в карточке.'},
+    {id:'D',n:'ФармаПлюс',x:90,y:60,d:'600 м',h:'Ср–Вс 10:00–22:00',note:'',bdg:'Открыто',why:'По вторникам у «ФармаПлюс» выходной.'},
+    {id:'C',n:'Кривая аптека',x:300,y:70,d:'700 м',h:'Пн–Сб 8:00–20:00',note:'',bdg:'',why:''},
+    {id:'E',n:'Аптека «Ночная»',x:360,y:230,d:'1,2 км',h:'Круглосуточно',note:'',bdg:'Открыто',why:'«Ночная» открыта, но есть открытая аптека ближе.'}];
+  const MODES=[['car','🚗','На машине'],['bus','🚌','Транспорт'],['sc','🛴','Самокат'],['walk','🦶','Пешком']];
+  let sel=null,mode='car';
+  V.innerHTML=`<div class="l24"><svg viewBox="0 0 400 280"><g stroke="#fff" stroke-width="10">${[40,110,180,250].map(y=>`<line x1="0" y1="${y}" x2="400" y2="${y}"/>`).join('')}${[50,130,210,290,370].map(x=>`<line x1="${x}" y1="0" x2="${x}" y2="280"/>`).join('')}</g>
+    <rect x="60" y="120" width="60" height="50" fill="#cfe3c1"/><rect x="220" y="50" width="60" height="50" fill="#cfe3c1"/>
+    <g data-t="home"><circle cx="40" cy="240" r="14" fill="#5856d6"/><text x="40" y="246" font-size="16" text-anchor="middle">🏠</text></g>
+    ${P.map(p=>`<g class="pin" data-t="pin-${p.id}" data-id="${p.id}"><circle cx="${p.x}" cy="${p.y}" r="15" fill="#ff3b30"/><text x="${p.x}" y="${p.y+6}" font-size="16" text-anchor="middle">💊</text></g>`).join('')}
+    <text x="390" y="272" font-size="10" text-anchor="end" fill="#888">1 клетка ≈ 100 м</text></svg><div id="card"></div></div>`;
+  V.querySelectorAll('.pin').forEach(g=>g.onclick=()=>{sel=P.find(p=>p.id===g.dataset.id);card()});
+  function card(){const c=V.querySelector('#card');
+    c.innerHTML=`<div class="card"><b>${sel.n}</b>${sel.bdg?`<span class="bdg">${sel.bdg}</span>`:''}<div class="muted" style="font-size:14px">${sel.d} от дома · ${sel.h}</div>${sel.note?`<div class="tiny">${sel.note}</div>`:''}
+      <div class="modes">${MODES.map(m=>`<button class="${mode===m[0]?'on':''}" data-t="mode-${m[0]}" data-m="${m[0]}">${m[1]}</button>`).join('')}</div><div class="muted" style="font-size:13px">Режим: ${MODES.find(m=>m[0]===mode)[2]}</div>
+      <button class="btn w" data-t="go" style="margin-top:10px">Поехали</button></div>`;
+    c.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{mode=b.dataset.m;card()});
+    c.querySelector('[data-t=go]').onclick=()=>{if(sel.id!=='C')return api.fail(sel.why);if(mode!=='walk')return api.fail(`Маршрут: «${MODES.find(m=>m[0]===mode)[2]}». А нужен пешеходный.`);api.win()}}
+}});
+
+/* ===================== МИР 5: ОФИСНЫЙ АД ===================== */
+
+/* 25. МЕССЕНДЖЕР */
+LV({id:'chat',name:'Сообщение начальнику',
+task:'Напиши начальнику, <b>Игорю Петровичу</b>: «<b>Опоздаю на 10 минут</b>». Только ему лично, текст — слово в слово.',
+hints:['Игорей Петровичей двое — открой профиль (нажми на имя в шапке чата). Автозамена исправляет слова после пробела — над полем появляется кнопка, чтобы вернуть своё слово, и тогда клавиатура его запомнит. И она проверяет последнее слово даже при отправке!',
+'Чат «Игорь Петрович» с сообщением «Жду отчёт к обеду» (в профиле — начальник отдела). Набирай по словам: после каждой автозамены нажимай «Вернуть «…»». Последнее слово «минут» тоже: поставь после него пробел, верни слово, потом отправь кнопкой ➤ (слева). 🎤 — это голосовое.'],
+css:`.l25 .cl{display:flex;gap:12px;align-items:center;width:100%;border:none;border-bottom:1px solid #eee;background:#fff;padding:11px 14px;text-align:left;color:#1c1c1e}.l25 .av{width:46px;height:46px;border-radius:50%;background:#d1d1d6;display:flex;align-items:center;justify-content:center;font-size:22px;flex:none}.l25 .msgs{background:#e5ddd5;min-height:44vh;padding:12px;display:flex;flex-direction:column;gap:6px}.l25 .b{max-width:78%;padding:8px 12px;border-radius:14px;font-size:15px;background:#fff;align-self:flex-start}.l25 .b.me{background:#dcf8c6;align-self:flex-end}.l25 .bar{display:flex;gap:6px;padding:8px;background:#f6f6f6;align-items:center}.l25 .bar button{width:44px;height:44px;border-radius:50%;border:none;font-size:20px;flex:none;padding:0}.l25 .sug{background:#d1d5db;padding:6px 8px;display:flex;justify-content:center;min-height:40px;align-items:center}.l25 .sug button{border:none;background:#fff;border-radius:8px;padding:7px 12px;font-size:14px}`,
+render(V,api){
+  const CH=[{id:'grp',n:'Босс и команда 👔',e:'👥',last:'Игорь П.: Планёрка в 10',prof:'Групповой чат · 23 участника',msgs:['Игорь П.: Планёрка в 10','Вася: 👍','Света: Я опоздаю']},
+    {id:'ip1',n:'Игорь Петрович',e:'👤',last:'Трубу поменяем в четверг',prof:'Игорь Петрович Кузнецов<br>Сантехник · «Кран-Сервис»',msgs:['Трубу поменяем в четверг']},
+    {id:'mom',n:'Мама',e:'👩',last:'Ты поел?',prof:'Мама ❤️',msgs:['Ты поел?']},
+    {id:'ip2',n:'Игорь Петрович',e:'👤',last:'Жду отчёт к обеду',prof:'Игорь Петрович Смирнов<br>Начальник отдела · ООО «КривоСофт»',msgs:['Жду отчёт к обеду']},
+    {id:'cat',n:'Бося 🐱',e:'🐱',last:'мяу',prof:'Кот. Просто кот.',msgs:['мяу']}];
+  const AC={'опоздаю':'опозорюсь','на':'ня','10':'100','минут':'минуток'};
+  const learned=new Set();let chat=null,lastC=null;
+  list();
+  function list(){V.innerHTML=`<div class="l25"><div class="ah">💬 Кривограм Мессенджер</div>${CH.map(c=>`<button class="cl" data-t="ch-${c.id}" data-id="${c.id}"><span class="av">${c.e}</span><span style="flex:1"><b>${c.n}</b><br><span class="muted" style="font-size:14px">${c.last}</span></span></button>`).join('')}</div>`;
+    V.querySelectorAll('[data-id]').forEach(b=>b.onclick=()=>{chat=CH.find(c=>c.id===b.dataset.id);open()})}
+  const fixCase=(orig,rep)=>orig[0]&&orig[0]!==orig[0].toLowerCase()?rep[0].toUpperCase()+rep.slice(1):rep;
+  function open(){lastC=null;
+    V.innerHTML=`<div class="l25"><div class="ah"><button class="btn ghost" data-t="back">‹</button><button class="btn ghost" data-t="prof" style="color:#1c1c1e;font-weight:700;font-size:17px">${chat.e} ${chat.n}</button></div>
+      <div class="msgs" id="ms">${chat.msgs.map(m=>`<div class="b">${m}</div>`).join('')}</div>
+      <div class="sug" id="sug"><span class="muted" style="font-size:13px">Автозамена включена ✨</span></div>
+      <div class="bar"><button data-t="send" style="background:#007aff;color:#fff">➤</button><input class="inp" data-t="msg" placeholder="Сообщение" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" style="border-radius:22px"><button data-t="voice" style="background:#e5e5ea">🎤</button></div></div>`;
+    const inp=V.querySelector('[data-t=msg]'),sug=V.querySelector('#sug');
+    V.querySelector('[data-t=back]').onclick=list;
+    V.querySelector('[data-t=prof]').onclick=()=>{const s=api.sheet(`<div style="text-align:center;font-size:54px">${chat.e}</div><h3 style="text-align:center">${chat.n}</h3><p style="text-align:center">${chat.prof}</p><button class="btn w gr" data-t="pclose">Закрыть</button>`);s.querySelector('[data-t=pclose]').onclick=s.close};
+    const showSug=()=>{if(!lastC){sug.innerHTML='<span class="muted" style="font-size:13px">Автозамена включена ✨</span>';return}
+      sug.innerHTML=`<span style="font-size:13px;margin-right:8px">Исправлено на «${lastC.rep}»</span><button data-t="undo">Вернуть «${lastC.orig}»</button>`;
+      sug.querySelector('[data-t=undo]').onclick=()=>{const v=inp.value,i=v.lastIndexOf(lastC.rep);if(i>=0)inp.value=v.slice(0,i)+lastC.orig+v.slice(i+lastC.rep.length);learned.add(lastC.orig.toLowerCase());api.toast(`«${lastC.orig}» добавлено в словарь`,'good',1600);lastC=null;showSug();inp.focus()}};
+    inp.addEventListener('input',()=>{const v=inp.value;const m=v.match(/(\S+) $/);if(!m)return;const w=m[1],lw=w.toLowerCase();
+      if(AC[lw]&&!learned.has(lw)){const rep=fixCase(w,AC[lw]);inp.value=v.slice(0,v.length-w.length-1)+rep+' ';lastC={orig:w,rep};showSug()}});
+    V.querySelector('[data-t=voice]').onclick=()=>api.fail('Вы отправили голосовое: 0:03 сопения в трубку.');
+    V.querySelector('[data-t=send]').onclick=()=>{let v=inp.value.trim();if(!v)return;
+      const m=v.match(/(\S+)$/);if(m){const w=m[1],lw=w.toLowerCase();if(AC[lw]&&!learned.has(lw))v=v.slice(0,v.length-w.length)+fixCase(w,AC[lw])}
+      const ms=V.querySelector('#ms');const bub=h(`<div class="b me">${v.replace(/</g,'&lt;')}</div>`);ms.appendChild(bub);inp.value='';lastC=null;showSug();
+      const norm=v.toLowerCase().replace(/\s+/g,' ').replace(/[.!…]+$/,'').trim();
+      if(chat.id!=='ip2'){api.fail(chat.id==='ip1'?'Сантехник Игорь Петрович ответил: «Да хоть на час, трубу всё равно в четверг».':chat.id==='grp'?'Сообщение ушло всей команде из 23 человек. Света поставила 👍.':'Сообщение ушло не тому адресату.');api.later(()=>bub.remove(),1500);return}
+      if(norm!=='опоздаю на 10 минут'){api.fail(`Отправлено: «${v}». Начальник поднял бровь. Сообщение удалено — попробуй ещё.`);api.later(()=>bub.remove(),1500);return}
+      api.later(()=>{ms.appendChild(h('<div class="b">Ок 👌</div>'));api.later(api.win,700)},600)};
+  }
+}});
+
+/* 26. ОБЛАЧНЫЙ ДИСК */
+LV({id:'cloud',name:'Облачный диск',
+task:'Диск забит: 9,4 ГБ из 10. Освободи место, чтобы было занято <b>не больше 5 ГБ</b>. Файлы со ⭐ и папку «Документы» <b>не трогать</b>.',
+hints:['Размеры указаны в разных единицах — переведи всё в одни (1 ГБ = 1000 МБ = 1 000 000 КБ). Значки на кнопках врут — читай подписи. И удалённое продолжает занимать место, пока лежит в корзине.',
+'Отметь, например: Отпуск_2019.zip (1,74 ГБ), Фильм_старый.mkv (1,4 ГБ), backup_телефона.bak (1,2 ГБ), Кэш_браузера (0,9 ГБ) — итого 5,24 ГБ. Нажми кнопку с подписью «Удалить» (значок 📦). Затем вкладка «Корзина» → маленькая «Очистить корзину» → «Удалить навсегда».'],
+css:`.l26 .bar{height:10px;border-radius:5px;background:#e5e5ea;overflow:hidden;margin:6px 0}.l26 .bar i{display:block;height:100%;background:#ff3b30}.l26 .f{display:flex;align-items:center;gap:10px;padding:11px 14px;border-bottom:1px solid #f0f0f0}.l26 .f input{width:22px;height:22px}.l26 .tb{display:flex;gap:6px;padding:8px 10px;background:#f2f2f7;position:sticky;top:0;z-index:2}.l26 .tb button{flex:1;border:none;background:#fff;border-radius:10px;padding:8px 2px;font-size:20px;line-height:1.1}.l26 .tb button small{display:block;font-size:11px;color:#3a3a3c}.l26 .tabs{display:flex;border-bottom:1px solid #eee}.l26 .tabs button{flex:1;border:none;background:#fff;padding:12px;font-size:15px}.l26 .tabs button.on{border-bottom:3px solid #007aff;font-weight:700}`,
+render(V,api){
+  const mk=(id,n,s,mb,imp)=>({id,n,s,mb,imp});
+  let files,trash,tab,sel,arch;
+  const init=()=>{trash=[];tab='disk';sel=new Set();arch=0;files=[mk('wed','⭐ Свадьба.mp4','2,1 ГБ',2100,1),mk('docs','📁 Документы','640 МБ',640,1),mk('vac','Отпуск_2019.zip','1 740 МБ',1740),mk('film','Фильм_старый.mkv','1,4 ГБ',1400),mk('dip','⭐ Диплом.pdf','12 МБ',12,1),mk('cache','Кэш_браузера','900 000 КБ',900),mk('shots','Скриншоты (3 000 шт.)','0,35 ГБ',350),mk('mus','Музыка.rar','800 МБ',800),mk('bak','backup_телефона.bak','1,2 ГБ',1200),mk('cat','Видео_с_котом.mov','256 000 КБ',256),mk('cv','Резюме_финал_v27.docx','2 000 КБ',2)]};
+  init();
+  const used=()=>files.reduce((a,f)=>a+f.mb,0)+trash.reduce((a,f)=>a+f.mb,0);
+  const gb=mb=>(mb/1000).toFixed(2).replace('.',',').replace(/0$/,'');
+  draw();
+  function draw(){const u=used();
+    V.innerHTML=`<div class="l26"><div class="ah">☁️ КривоДиск</div><div class="p16" style="padding-bottom:8px"><div class="row" style="justify-content:space-between"><span>Занято <b data-t="used">${gb(u)} ГБ</b> из 10 ГБ</span><span class="tiny">1 ГБ = 1000 МБ = 1 000 000 КБ</span></div><div class="bar"><i style="width:${Math.min(100,u/100)}%"></i></div><div class="tiny">Файлы в корзине тоже занимают место</div></div>
+      <div class="tabs"><button class="${tab==='disk'?'on':''}" data-t="tab-disk">Мой диск</button><button class="${tab==='trash'?'on':''}" data-t="tab-trash">Корзина (${trash.length})</button></div><div id="c"></div></div>`;
+    V.querySelector('[data-t=tab-disk]').onclick=()=>{tab='disk';sel.clear();draw()};V.querySelector('[data-t=tab-trash]').onclick=()=>{tab='trash';draw()};
+    const c=V.querySelector('#c');
+    if(tab==='trash'){c.innerHTML=trash.length?`${trash.map(f=>`<div class="f"><span style="flex:1">${f.n}</span><span class="muted" style="font-size:13px">${f.s}</span></div>`).join('')}<div class="p16"><button class="btn w" data-t="restore">Восстановить всё</button><div style="text-align:center;margin-top:10px"><button class="btn tb" data-t="empty">очистить корзину</button></div></div>`:'<div class="p16 muted">Корзина пуста</div>';
+      const r=c.querySelector('[data-t=restore]');if(r)r.onclick=()=>{files=files.concat(trash);trash=[];api.toast('Всё восстановлено! Даже то, что вы не просили.');draw()};
+      const e=c.querySelector('[data-t=empty]');if(e)e.onclick=()=>{const s=api.sheet(`<h3>Удалить навсегда?</h3><p>Это действие нельзя отменить. Совсем. Даже нам.</p><button class="btn w" data-t="keep" style="padding:16px">Отмена</button><div style="text-align:center;margin-top:8px"><button class="btn tb" data-t="del">Удалить навсегда</button></div>`);
+        s.querySelector('[data-t=keep]').onclick=s.close;s.querySelector('[data-t=del]').onclick=()=>{trash=[];s.close();api.toast('Корзина очищена','good');draw();check()}};return}
+    c.innerHTML=`<div class="tb"><button data-t="a-arch">🗑<small>Архивировать</small></button><button data-t="a-del">📦<small>Удалить</small></button><button data-t="a-dl">⬇️<small>Поделиться</small></button><button data-t="a-sh">🔗<small>Скачать</small></button></div>
+      <label class="f" style="background:#fafafa"><input type="checkbox" data-t="all"> <b>Выбрать всё</b></label>
+      ${files.map(f=>`<label class="f"><input type="checkbox" data-t="f-${f.id}" data-id="${f.id}" ${sel.has(f.id)?'checked':''}><span style="flex:1">${f.n}</span><span class="muted" style="font-size:13px">${f.s}</span></label>`).join('')}`;
+    c.querySelectorAll('[data-id]').forEach(i=>i.onchange=()=>{i.checked?sel.add(i.dataset.id):sel.delete(i.dataset.id)});
+    c.querySelector('[data-t=all]').onchange=e=>{files.forEach(f=>e.target.checked?sel.add(f.id):sel.delete(f.id));c.querySelectorAll('[data-id]').forEach(i=>i.checked=e.target.checked)};
+    const chosen=()=>files.filter(f=>sel.has(f.id));
+    c.querySelector('[data-t=a-del]').onclick=()=>{const ch=chosen();if(!ch.length)return api.toast('Ничего не выбрано');
+      const imp=ch.find(f=>f.imp);if(imp){api.fail(`Вы удалили «${imp.n.replace('⭐ ','').replace('📁 ','')}». Это было важное! Всё вернули, начинаем сначала.`);init();return draw()}
+      files=files.filter(f=>!sel.has(f.id));trash=trash.concat(ch);sel.clear();api.toast('Перемещено в корзину. Место освободится после очистки корзины.');draw();check()};
+    c.querySelector('[data-t=a-arch]').onclick=()=>{const ch=chosen();if(!ch.length)return api.toast('Ничего не выбрано');const mb=Math.round(ch.reduce((a,f)=>a+f.mb,0)*0.95);arch++;files.push(mk('arch'+arch,`Архив_${arch}.zip`,fmt(mb)+' МБ',mb));sel.clear();api.toast('Архив создан (сжатие 5%). Оригиналы на месте 👍');draw()};
+    c.querySelector('[data-t=a-dl]').onclick=()=>api.toast('Ссылка создана. Поделились с 0 людьми.');c.querySelector('[data-t=a-sh]').onclick=()=>api.toast('Скачивание на диск, который заполнен. Не вышло.');
+  }
+  function check(){const impOk=['wed','docs','dip'].every(id=>files.some(f=>f.id===id));if(impOk&&used()<=5000)api.later(api.win,500)}
+}});
+
+/* 27. УСТАНОВЩИК */
+LV({id:'installer',name:'Установщик',
+task:'Установи «АрхиваторПро» и <b>ничего больше</b>: никаких тулбаров, антивирусов, браузеров, оптимизаторов и «полезных» сайтов.',
+hints:['Режим установки «для опытных» — твой. Лицензию стоит прочитать: в середине спрятан пункт о том, как отказаться от ещё одной программы. На шаге установки что-то ждёт ответа — посмотри на панель задач.',
+'Прокрути лицензию: п. 7.3 — впиши <b>НЕТ</b> в поле «Ключ продукта». Выбери «Выборочная», сними три галочки, <b>поставь</b> «Не устанавливать Оптимизатор ПК», ключ НЕТ. Предложение — «Отклонить». На 99% нажми «❓ Вопрос (1)» в панели задач. В конце сними «Посетить сайт Суперпоиска».'],
+css:`.l27{background:#3a6ea5;padding:14px;min-height:64vh;font-family:Tahoma,Verdana,sans-serif}.l27 .win{background:#ece9d8;border:2px solid #0a246a;border-radius:8px 8px 0 0;max-width:520px;margin:0 auto;box-shadow:4px 4px 0 #0004}.l27 .tt{background:linear-gradient(#0a246a,#3a6ea5);color:#fff;font-weight:bold;padding:6px 10px;font-size:14px;border-radius:6px 6px 0 0}.l27 .bd{padding:16px;min-height:270px;font-size:14px;color:#000}.l27 .ft{display:flex;gap:8px;justify-content:flex-end;padding:10px 16px;border-top:1px solid #aca899}.l27 .ft button{min-width:90px;padding:7px 10px;border:1px solid #003c74;background:linear-gradient(#fff,#d6d3c4);border-radius:3px;font-family:inherit;font-size:13px;color:#000}.l27 .ft button:disabled{color:#aaa;border-color:#bbb}.l27 .lic{height:160px;overflow-y:scroll;background:#fff;border:1px solid #7f9db9;padding:8px;font-size:12px;line-height:1.5;-webkit-overflow-scrolling:touch}.l27 .pb{height:20px;border:1px solid #7f9db9;background:#fff;padding:2px}.l27 .pb i{display:block;height:100%;background:repeating-linear-gradient(90deg,#2bb32b 0 9px,#fff 9px 11px);transition:width .3s}.l27 .task{display:flex;gap:6px;background:#245edb;padding:5px;max-width:520px;margin:0 auto;border-radius:0 0 6px 6px}.l27 .task button{border:none;border-radius:4px;padding:6px 10px;font-size:12px;color:#fff;background:#3c81f3}.l27 .task .start{background:#3c9a3c;font-weight:bold}.l27 .task .blink{animation:l27b 1s steps(2) infinite}@keyframes l27b{50%{background:#ff9500}}.l27 label.cb{font-size:14px;padding:6px 0}`,
+render(V,api){
+  const st={toolbar:true,home:true,av:true,noOpt:false,key:'',offer:null,visit:true,launch:true,type:'rec'};
+  let step=1,askPending=false,prog=0;
+  const LIC=Array.from({length:14},(_,i)=>`<p><b>${i+1}.</b> ${['Пользователь обязуется использовать программу.','Программа предоставляется «как есть», а иногда «как получится».','Мы не несём ответственности ни за что, включая это лицензионное соглашение.','Пользователь соглашается получать уведомления о новых соглашениях.','Программа может собирать анонимные данные: имя, адрес, группу крови.','Сжатие файлов может привести к их расжатию.','<b>7.3.</b> При установке также будет установлен «Суперпоиск Браузер». Чтобы отказаться от его установки, укажите слово НЕТ в поле «Ключ продукта» на шаге «Компоненты».','Пункт 8 намеренно оставлен пустым.','Принимая соглашение, вы принимаете и пункт 9.','Мы оставляем за собой право изменить это соглашение задним числом.','Архиватор не архивирует архивы архиваторов.','Пользователь подтверждает, что дочитал до этого места. Молодец.','Все споры решаются в суде Кривостана.','Конец соглашения. Правда конец.'][i]}</p>`).join('');
+  draw();
+  function draw(){
+    let body='',canNext=true,nextL='Далее >';
+    if(step===1)body=`<h3 style="margin-top:0">Добро пожаловать в мастер установки АрхиваторПро 9.0</h3><p>Мастер установит АрхиваторПро на ваш компьютер. Рекомендуется закрыть все программы. И глаза.</p>`;
+    if(step===2){body=`<b>Лицензионное соглашение</b><div class="lic" id="lic">${LIC}</div><label class="cb"><input type="radio" name="a" value="1" data-t="acc"> Я принимаю условия</label><label class="cb"><input type="radio" name="a" value="0" checked> Я не принимаю условия</label><div class="tiny" style="color:#555">Чтобы продолжить, прокрутите соглашение до конца.</div>`;canNext=false}
+    if(step===3)body=`<b>Тип установки</b><label class="cb"><input type="radio" name="t" value="rec" data-t="t-rec" ${st.type==='rec'?'checked':''}> Рекомендуемая (с полезными программами) ✓</label><label class="cb"><input type="radio" name="t" value="custom" data-t="t-custom" ${st.type==='custom'?'checked':''}> Выборочная (для опытных пользователей)</label>`;
+    if(step===4)body=`<b>Компоненты</b><label class="cb"><input type="checkbox" checked disabled> АрхиваторПро (обязательно)</label><label class="cb"><input type="checkbox" data-t="c-toolbar" ${st.toolbar?'checked':''}> Тулбар «Суперпоиск»</label><label class="cb"><input type="checkbox" data-t="c-home" ${st.home?'checked':''}> Сделать «Суперпоиск» домашней страницей</label><label class="cb"><input type="checkbox" data-t="c-av" ${st.av?'checked':''}> Антивирус «Щит-3000» (пробный, 7 дней)</label><label class="cb"><input type="checkbox" data-t="c-noopt" ${st.noOpt?'checked':''}> Не устанавливать «Оптимизатор ПК»</label><div style="margin-top:8px">Ключ продукта (необязательно):</div><input class="inp" data-t="key" value="${st.key}" style="font-size:15px;padding:7px;border-radius:2px" autocapitalize="characters" autocorrect="off">`;
+    if(step===5){body=`<div style="text-align:center"><div style="font-size:40px">🚀</div><b style="font-size:16px">Специальное предложение!</b><p>«КривоКлинер» ускорит ваш ПК на 300%. Или замедлит. Одно из двух.</p><button class="btn g" data-t="offer-yes" style="font-size:18px;padding:14px 30px">Принять</button><div style="margin-top:10px"><button class="btn tb" data-t="offer-no">Отклонить</button></div></div>`;canNext=false}
+    if(step===6){body=`<b>Установка…</b><p id="lg">Копирование файлов…</p><div class="pb"><i style="width:${prog}%"></i></div><p style="font-size:12px;color:#555" id="pct">${prog}%</p><button class="btn tb" data-t="details">Подробнее</button><div id="det" class="tiny" style="color:#555"></div>`;canNext=false}
+    if(step===7){body=`<h3 style="margin-top:0">Установка завершена</h3><label class="cb"><input type="checkbox" data-t="f-launch" ${st.launch?'checked':''}> Запустить АрхиваторПро</label><label class="cb"><input type="checkbox" data-t="f-visit" ${st.visit?'checked':''}> Посетить сайт «Суперпоиск» и узнать о новых акциях</label>`;nextL='Готово'}
+    V.innerHTML=`<div class="l27"><div class="win"><div class="tt">💾 Установка — АрхиваторПро</div><div class="bd">${body}</div><div class="ft"><button data-t="next" ${canNext?'':'disabled'}>${nextL}</button><button data-t="cancel">Отмена</button></div></div>
+      <div class="task"><button class="start">Пуск</button><button>АрхиваторПро — уст…</button>${askPending?'<button class="blink" data-t="ask">❓ Вопрос (1)</button>':''}</div></div>`;
+    const q=s=>V.querySelector(s);
+    q('[data-t=cancel]').onclick=()=>api.toast('Установка отменена. Шутка, продолжаем.');
+    const nx=q('[data-t=next]');
+    if(step===2){const lic=q('#lic');let sc=false;const en=()=>{nx.disabled=!(sc&&q('[data-t=acc]').checked)};lic.onscroll=()=>{if(lic.scrollTop+lic.clientHeight>=lic.scrollHeight-6){sc=true;en()}};V.querySelectorAll('input[name=a]').forEach(r=>r.onchange=en)}
+    if(step===3)V.querySelectorAll('input[name=t]').forEach(r=>r.onchange=()=>st.type=r.value);
+    if(step===4){[['c-toolbar','toolbar'],['c-home','home'],['c-av','av'],['c-noopt','noOpt']].forEach(([k,f])=>q(`[data-t=${k}]`).onchange=e=>st[f]=e.target.checked);q('[data-t=key]').oninput=e=>st.key=e.target.value}
+    if(step===5){q('[data-t=offer-yes]').onclick=()=>{st.offer=true;step=6;run()};q('[data-t=offer-no]').onclick=()=>{st.offer=false;step=6;run()}}
+    if(step===6){q('[data-t=details]').onclick=()=>{q('#det').textContent=prog>=99?'[99%] Ожидание ответа пользователя в окне, которое открылось за этим окном…':'[..] Копирование файлов, которые копируют файлы.'}}
+    if(step===7){q('[data-t=f-launch]').onchange=e=>st.launch=e.target.checked;q('[data-t=f-visit]').onchange=e=>st.visit=e.target.checked}
+    const ask=q('[data-t=ask]');if(ask)ask.onclick=()=>{const s=api.sheet(`<h3>АрхиваторПро</h3><p>Перезагрузить компьютер сейчас?</p><div class="row"><button class="btn w" data-t="rb-yes">Да</button><button class="btn w gr" data-t="rb-no">Позже</button></div>`);
+      const go=()=>{s.close();askPending=false;prog=100;step=7;draw()};s.querySelector('[data-t=rb-yes]').onclick=go;s.querySelector('[data-t=rb-no]').onclick=go};
+    nx.onclick=()=>{if(step===3&&st.type==='rec'){st.toolbar=st.home=st.av=true;st.noOpt=false;st.key='';step=5;return draw()}
+      if(step===7)return finish();step++;draw()};
+  }
+  function run(){draw();const t=api.every(()=>{if(prog<99){prog=Math.min(99,prog+11);const pb=V.querySelector('.pb i');if(pb){pb.style.width=prog+'%';V.querySelector('#pct').textContent=prog+'%'}}else{clearInterval(t);if(!askPending){askPending=true;draw()}}},250)}
+  function finish(){
+    const junk=[];if(st.toolbar)junk.push('Тулбар «Суперпоиск»');if(st.home)junk.push('стартовая страница «Суперпоиск»');if(st.av)junk.push('антивирус «Щит-3000»');if(!st.noOpt)junk.push('«Оптимизатор ПК»');if(st.key.trim().toUpperCase()!=='НЕТ')junk.push('«Суперпоиск Браузер»');if(st.offer)junk.push('«КривоКлинер»');if(st.visit)junk.push('открыт сайт «Суперпоиск» с 14 вкладками');
+    if(junk.length){api.fail(`Установлено: АрхиваторПро + ${junk.length} «полезных» штук: ${junk.join(', ')}.`);Object.assign(st,{toolbar:true,home:true,av:true,noOpt:false,key:'',offer:null,visit:true,launch:true,type:'rec'});step=1;prog=0;askPending=false;return draw()}
+    V.querySelector('.bd').innerHTML='<div style="text-align:center;padding:40px 0;font-size:16px">✅ АрхиваторПро установлен.<br>Один. Без друзей.</div>';api.later(api.win,700)}
+}});
+
+/* 28. КАЛЕНДАРЬ */
+LV({id:'calendar',name:'Созвон с Владивостоком',
+task:'Назначь созвон с Колей (<b>kolya@krivo.ru</b>) на <b>9:00 по его времени, 25 ноября</b>. Коля во Владивостоке (UTC+10), ты в Самаре (UTC+4). Длительность — <b>30 минут</b>.',
+hints:['Посмотри, в каком часовом поясе календарь записывает время. Есть два пути: пересчитать время в пояс календаря (и не забыть, что может поменяться дата) или найти спрятанную настройку пояса у самого события. И осторожно с подсказками адресов.',
+'Путь 1: «▸ Ещё параметры» → пояс «Владивосток (UTC+10)», дата 25, время 09:00. Путь 2 (календарь в UTC): 9:00 UTC+10 = <b>23:00 UTC 24 ноября</b>. Длительность 30 мин, участник именно kolya@krivo.ru (не kriwo), название любое.'],
+css:`.l28 .cal{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}.l28 .cal b{font-size:11px;color:#8e8e93;text-align:center}.l28 .cal button{aspect-ratio:1;border:none;border-radius:50%;background:none;font-size:15px;padding:0;color:#1c1c1e}.l28 .cal button.on{background:#ff3b30;color:#fff;font-weight:700}.l28 .stp{display:flex;align-items:center;gap:8px}.l28 .stp button{width:42px;height:40px;border-radius:10px;border:none;background:#f2f2f7;font-size:18px}.l28 .stp b{font-size:28px;min-width:44px;text-align:center;font-variant-numeric:tabular-nums}.l28 .em{display:inline-flex;gap:6px;align-items:center;background:#e5e5ea;border-radius:999px;padding:5px 10px;margin:4px 4px 0 0;font-size:14px}.l28 .em button{border:none;background:none;padding:0 2px;font-size:14px}.l28 .sg{border:1px solid #e5e5ea;border-radius:10px;margin-top:4px}.l28 .sg button{display:block;width:100%;text-align:left;border:none;border-bottom:1px solid #f2f2f2;background:#fff;padding:10px 12px;font-size:15px;color:#1c1c1e}`,
+render(V,api){
+  const TZ=[['utc','Как в календаре (UTC)',0],['sam','Самара (UTC+4)',4],['msk','Москва (UTC+3)',3],['vvo','Владивосток (UTC+10)',10]];
+  const SUG=['kolya@kriwo.ru','kolya@krivo.ru','kolyan@krivo.ru','kolya.krivo@gmail.com'];
+  let E={title:'',day:null,hh:12,mm:0,dur:60,tz:'utc',ppl:[],more:false};
+  home();
+  function home(){V.innerHTML=`<div class="l28"><div class="ah">📅 Ноябрь 2026<span class="sp"></span><button class="btn ghost" data-t="gear">⚙</button></div><div class="p16"><div class="tiny" style="margin-bottom:8px">Всё время в календаре — UTC</div>
+      <div class="card">Пн 23 · 06:00 UTC — Планёрка<br>Ср 25 · 05:00 UTC — Дедлайн отчёта</div><button class="btn w" data-t="new" style="margin-top:14px">+ Новое событие</button></div></div>`;
+    V.querySelector('[data-t=gear]').onclick=()=>api.toast('Часовой пояс календаря: UTC. Изменить можно в веб-версии (её нет).');
+    V.querySelector('[data-t=new]').onclick=form}
+  function form(){
+    V.innerHTML=`<div class="l28"><div class="ah"><button class="btn ghost" data-t="cancel">Отмена</button><span class="sp"></span>Новое событие<span class="sp"></span><button class="btn ghost" data-t="save" style="font-weight:700">Добавить</button></div><div class="p16">
+      <input class="inp" data-t="title" placeholder="Название" value="${E.title}">
+      <span class="lbl">Дата · ноябрь 2026</span><div class="cal">${['Пн','Вт','Ср','Чт','Пт','Сб','Вс'].map(d=>`<b>${d}</b>`).join('')}${'<span></span>'.repeat(6)}${Array.from({length:30},(_,k)=>`<button class="${E.day===k+1?'on':''}" data-t="day-${k+1}" data-d="${k+1}">${k+1}</button>`).join('')}</div>
+      <span class="lbl">Начало</span><div class="row"><div class="stp"><button data-t="h-">−</button><b id="hh">${String(E.hh).padStart(2,'0')}</b><button data-t="h+">+</button></div><b>:</b><div class="row" style="gap:4px">${[0,15,30,45].map(m=>`<button class="chip ${E.mm===m?'on':''}" data-t="mm-${m}" data-m="${m}" style="padding:7px 10px">${String(m).padStart(2,'0')}</button>`).join('')}</div></div>
+      <span class="lbl">Длительность</span><select class="inp" data-t="dur">${[15,30,60,90].map(d=>`<option value="${d}" ${E.dur===d?'selected':''}>${d} мин</option>`).join('')}</select>
+      <span class="lbl">Участники</span><div id="ppl">${E.ppl.map((p,i)=>`<span class="em">${p}<button data-i="${i}">✕</button></span>`).join('')}</div><input class="inp" data-t="who" placeholder="Имя или email" autocapitalize="off" autocorrect="off" style="margin-top:6px"><div id="sg"></div>
+      <button class="btn ghost" data-t="more" style="padding-left:0;margin-top:8px">${E.more?'▾':'▸'} Ещё параметры</button>
+      ${E.more?`<span class="lbl">Часовой пояс события</span><select class="inp" data-t="tz">${TZ.map(t=>`<option value="${t[0]}" ${E.tz===t[0]?'selected':''}>${t[1]}</option>`).join('')}</select>`:''}</div></div>`;
+    const q=s=>V.querySelector(s);
+    q('[data-t=title]').oninput=e=>E.title=e.target.value;
+    V.querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>{E.day=+b.dataset.d;V.querySelectorAll('[data-d]').forEach(x=>x.classList.toggle('on',x===b))});
+    q('[data-t="h-"]').onclick=()=>{E.hh=(E.hh+23)%24;q('#hh').textContent=String(E.hh).padStart(2,'0')};q('[data-t="h+"]').onclick=()=>{E.hh=(E.hh+1)%24;q('#hh').textContent=String(E.hh).padStart(2,'0')};
+    V.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{E.mm=+b.dataset.m;V.querySelectorAll('[data-m]').forEach(x=>x.classList.toggle('on',x===b))});
+    q('[data-t=dur]').onchange=e=>E.dur=+e.target.value;
+    V.querySelectorAll('#ppl [data-i]').forEach(b=>b.onclick=()=>{E.ppl.splice(+b.dataset.i,1);form()});
+    const who=q('[data-t=who]');who.oninput=()=>{const v=who.value.trim().toLowerCase();const sg=q('#sg');if(v.length<2){sg.innerHTML='';return}
+      const m=SUG.filter(s=>s.includes(v));sg.innerHTML=m.length?`<div class="sg">${m.map(s=>`<button data-t="sg-${s}" data-s="${s}">${s}</button>`).join('')}</div>`:'';
+      sg.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>{if(!E.ppl.includes(b.dataset.s))E.ppl.push(b.dataset.s);form()})};
+    q('[data-t=more]').onclick=()=>{E.more=!E.more;form()};
+    const tz=q('[data-t=tz]');if(tz)tz.onchange=e=>E.tz=e.target.value;
+    q('[data-t=cancel]').onclick=()=>{E={title:'',day:null,hh:12,mm:0,dur:60,tz:'utc',ppl:[],more:false};home()};
+    q('[data-t=save]').onclick=save}
+  function save(){
+    if(!E.title.trim())return api.toast('Введите название');if(!E.day)return api.toast('Выберите дату');if(!E.ppl.length)return api.toast('Добавьте участника');
+    const off=TZ.find(t=>t[0]===E.tz)[2];const utc=Date.UTC(2026,10,E.day,E.hh,E.mm)-off*3600e3;const target=Date.UTC(2026,10,24,23,0);
+    const v=new Date(utc+10*3600e3);const vs=`${v.getUTCDate()} ноября в ${String(v.getUTCHours()).padStart(2,'0')}:${String(v.getUTCMinutes()).padStart(2,'0')}`;
+    if(utc!==target)return api.fail(`Созвон у Коли начнётся ${vs} по владивостокскому времени. А нужно 25 ноября в 09:00.`);
+    if(E.dur!==30)return api.fail(`Длительность ${E.dur} минут. Коля столько не выдержит.`);
+    if(E.ppl.some(p=>p!=='kolya@krivo.ru'))return api.fail(`Приглашение ушло на ${E.ppl.filter(p=>p!=='kolya@krivo.ru').join(', ')}. Это не тот Коля.`);
+    if(!E.ppl.includes('kolya@krivo.ru'))return api.fail('Коля не приглашён.');
+    api.win()}
+}});
+
+/* 29. УДАЛЕНИЕ АККАУНТА */
+LV({id:'delete',name:'Удалить аккаунт',
+task:'Удали свой аккаунт в «Кривограме». Насовсем. Твой пароль: <b>krivo2026</b>. Доступа к старому номеру телефона у тебя нет.',
+hints:['Тут замкнутый круг: удаление требует отвязать телефон, отвязка — код с почты, подтверждение почты — SMS на телефон, к которому нет доступа. Ищи «запасной выход» в разделе безопасности. Не все запасные ключи ещё годятся.',
+'Настройки → Безопасность → «Резервные коды» (пароль krivo2026) → возьми незачёркнутый код, например <b>7730-2291</b>. Телефон → Отвязать → «Нет доступа к почте? Использовать резервный код» → введи его. Затем Аккаунт → «Удалить аккаунт» → пароль → «Удалить навсегда» → маленькая «Выйти».'],
+css:`.l29 .ah{background:linear-gradient(90deg,#833ab4,#fd1d1d,#fcb045);color:#fff}.l29 .code{font-family:monospace;font-size:18px;padding:6px 0}.l29 .code.used{text-decoration:line-through;color:#c7c7cc}`,
+render(V,api){
+  let phone=true;const USED=['48211150','90976622','33450018','66507741','22094485'],FREE=['77302291','55129043','18643378'];
+  const ALL=['4821-1150','7730-2291','9097-6622','3345-0018','5512-9043','6650-7741','1864-3378','2209-4485'];
+  let used=new Set(USED);
+  main();
+  function main(){V.innerHTML=`<div class="l29"><div class="ah">📸 Кривограм<span class="sp"></span><button class="btn ghost" data-t="set" style="color:#fff;font-size:22px">⚙</button></div><div class="p16">${['Лайкнуть фото 2012 года? ❤️','Вас отметили на 14 фото','Новая сторис от «Бося 🐱»'].map(t=>`<div class="card" style="margin-bottom:10px">${t}</div>`).join('')}</div></div>`;V.querySelector('[data-t=set]').onclick=settings}
+  function settings(){V.innerHTML=`<div class="l29"><div class="ah"><button class="btn ghost" data-t="back" style="color:#fff">‹</button>Настройки</div>
+      <button class="li" data-t="s-acc">👤 Аккаунт<span class="chev">›</span></button><button class="li" data-t="s-sec">🔒 Безопасность<span class="chev">›</span></button><button class="li" data-t="s-ph">📱 Телефон<span class="muted" style="font-size:14px">${phone?'+7 9•• •••-00-00':'не привязан'}</span></button><button class="li" data-t="s-mail">✉️ Почта<span class="muted" style="font-size:14px">не подтверждена</span></button><button class="li" data-t="s-not">🔔 Уведомления<span class="chev">›</span></button></div>`;
+    const q=s=>V.querySelector(s);q('[data-t=back]').onclick=main;q('[data-t=s-not]').onclick=()=>api.toast('Уведомления: все. Выключить: нельзя.');
+    q('[data-t=s-acc]').onclick=account;q('[data-t=s-sec]').onclick=security;q('[data-t=s-ph]').onclick=phoneP;q('[data-t=s-mail]').onclick=mailP}
+  function account(){V.innerHTML=`<div class="l29"><div class="ah"><button class="btn ghost" data-t="back" style="color:#fff">‹</button>Аккаунт</div><div class="p16"><button class="btn w" data-t="deact" style="padding:16px">Деактивировать (временно)</button><div style="text-align:center;margin-top:20px"><button class="btn ghost" data-t="del" style="color:#ff3b30;font-size:13px">Удалить аккаунт</button></div></div></div>`;
+    V.querySelector('[data-t=back]').onclick=settings;
+    V.querySelector('[data-t=deact]').onclick=()=>api.fail('Аккаунт деактивирован. Друзья всё ещё видят ваши фото 2012 года. Это не удаление.');
+    V.querySelector('[data-t=del]').onclick=()=>{if(phone)return api.toast('Сначала отвяжите номер телефона.');
+      const s=api.sheet(`<h3>Удаление аккаунта</h3><p>Введите пароль для подтверждения.</p><input class="inp" type="password" data-t="dpw"><div class="err" id="e"></div><button class="btn r w" data-t="dgo" style="margin-top:10px">Удалить навсегда</button><button class="btn gr w" data-t="dx">Отмена</button>`);
+      s.querySelector('[data-t=dx]').onclick=s.close;
+      s.querySelector('[data-t=dgo]').onclick=()=>{if(s.querySelector('[data-t=dpw]').value!=='krivo2026'){s.querySelector('#e').textContent='Неверный пароль';return}s.close();
+        V.innerHTML=`<div class="l29"><div class="p16" style="text-align:center;padding-top:40px"><div style="font-size:50px">🥺</div><h3>Аккаунт будет удалён через 30 дней</h3><p class="muted">Если вы войдёте за это время, удаление отменится.</p><button class="btn w" data-t="stay" style="padding:16px">Остаться ещё на минутку</button><div style="margin-top:10px"><button class="btn tb" data-t="out">Выйти</button></div></div></div>`;
+        V.querySelector('[data-t=stay]').onclick=()=>{api.fail('Вы вошли в аккаунт — удаление отменено. Всё сначала (телефон уже отвязан, хоть это).');settings()};
+        V.querySelector('[data-t=out]').onclick=()=>{V.innerHTML='<div class="p16" style="text-align:center;padding-top:60px"><div style="font-size:50px">👋</div><h3>Вы вышли. Аккаунт удаляется.</h3><p class="muted">Мы будем писать вам на почту. Которую вы не подтвердили.</p></div>';api.later(api.win,900)}}}}
+  function security(){V.innerHTML=`<div class="l29"><div class="ah"><button class="btn ghost" data-t="back" style="color:#fff">‹</button>Безопасность</div><div class="li">Двухфакторная аутентификация<span class="muted">Вкл</span></div><button class="li" data-t="codes">Резервные коды<span class="chev">›</span></button><button class="li" data-t="sess">Активные сеансы<span class="chev">›</span></button></div>`;
+    V.querySelector('[data-t=back]').onclick=settings;V.querySelector('[data-t=sess]').onclick=()=>api.toast('Активных сеансов: 1. Это вы. Наверное.');
+    V.querySelector('[data-t=codes]').onclick=()=>{const s=api.sheet(`<h3>Резервные коды</h3><p>Введите пароль, чтобы посмотреть коды.</p><input class="inp" type="password" data-t="cpw"><div class="err" id="e"></div><button class="btn w" data-t="cgo" style="margin-top:10px">Показать</button><button class="btn gr w" data-t="cx">Отмена</button>`);
+      s.querySelector('[data-t=cx]').onclick=s.close;
+      s.querySelector('[data-t=cgo]').onclick=()=>{if(s.querySelector('[data-t=cpw]').value!=='krivo2026'){s.querySelector('#e').textContent='Неверный пароль';return}
+        s.querySelector('.sh').innerHTML=`<h3>Резервные коды</h3><p class="muted" style="font-size:14px">Каждый код можно использовать один раз. Использованные зачёркнуты.</p>${ALL.map(c=>`<div class="code ${used.has(c.replace('-',''))?'used':''}">${c}</div>`).join('')}<button class="btn gr w" data-t="cx2" style="margin-top:10px">Закрыть</button>`;s.querySelector('[data-t=cx2]').onclick=s.close}}}
+  function phoneP(){V.innerHTML=`<div class="l29"><div class="ah"><button class="btn ghost" data-t="back" style="color:#fff">‹</button>Телефон</div><div class="p16">${phone?`<div class="card">+7 9•• •••-00-00<br><span class="tiny">Старый номер</span></div><button class="btn r w" data-t="unlink" style="margin-top:12px">Отвязать</button>`:'<p>Телефон не привязан.</p>'}</div></div>`;
+    V.querySelector('[data-t=back]').onclick=settings;const u=V.querySelector('[data-t=unlink]');
+    if(u)u.onclick=()=>{const s=api.sheet(`<h3>Отвязка телефона</h3><p>Для подтверждения введите код, отправленный на почту.</p><input class="inp" data-t="ucode" inputmode="numeric" placeholder="Код"><div class="err" id="e"></div><button class="btn w" data-t="usend" style="margin-top:10px">Отправить код на почту</button><button class="btn w g" data-t="uok">Подтвердить</button><div style="text-align:center;margin-top:10px"><button class="btn ghost" data-t="ubackup" style="font-size:12px">Нет доступа к почте? Использовать резервный код</button></div><button class="btn gr w" data-t="ux">Отмена</button>`);
+      let mode='mail';
+      s.querySelector('[data-t=ux]').onclick=s.close;
+      s.querySelector('[data-t=usend]').onclick=()=>{s.querySelector('#e').textContent='Почта не подтверждена. Сначала подтвердите почту.'};
+      s.querySelector('[data-t=ubackup]').onclick=()=>{mode='backup';s.querySelector('[data-t=ucode]').placeholder='Резервный код (8 цифр)';s.querySelector('#e').textContent='';s.querySelector('[data-t=usend]').style.display='none'};
+      s.querySelector('[data-t=uok]').onclick=()=>{const v=s.querySelector('[data-t=ucode]').value.replace(/\D/g,'');
+        if(mode==='mail'){s.querySelector('#e').textContent='Неверный код. (Код на почту так и не был отправлен.)';return}
+        if(used.has(v)){s.querySelector('#e').textContent='Этот код уже использован.';return}
+        if(!FREE.includes(v)){s.querySelector('#e').textContent='Неверный резервный код.';return}
+        used.add(v);phone=false;s.close();api.toast('Телефон отвязан! 🎉','good');phoneP()}}}
+  function mailP(){V.innerHTML=`<div class="l29"><div class="ah"><button class="btn ghost" data-t="back" style="color:#fff">‹</button>Почта</div><div class="p16"><div class="card">player@krivomail.ru<br><span class="tiny">Не подтверждена</span></div><button class="btn w" data-t="conf" style="margin-top:12px">Подтвердить почту</button></div></div>`;
+    V.querySelector('[data-t=back]').onclick=settings;
+    V.querySelector('[data-t=conf]').onclick=()=>{const s=api.sheet(`<h3>Подтверждение почты</h3><p>Мы отправили SMS с кодом на +7 9•• •••-00-00.</p><input class="inp" data-t="mcode" inputmode="numeric" placeholder="Код из SMS"><div class="err" id="e"></div><button class="btn w" data-t="mok" style="margin-top:10px">Подтвердить</button><button class="btn gr w" data-t="mx">Отмена</button><div class="tiny" style="text-align:center;margin-top:8px">Код не пришёл? Отправить снова через 59 сек</div>`);
+      s.querySelector('[data-t=mx]').onclick=s.close;s.querySelector('[data-t=mok]').onclick=()=>{s.querySelector('#e').textContent='Неверный код. SMS ушло на старый номер, к которому нет доступа.'}}}
+}});
+
+/* 30. ФИНАЛ: ОТЗЫВ */
+LV({id:'review',name:'Финал: отзыв',
+task:'Последний босс. Поставь игре <b>ровно 3 звезды</b> и опубликуй отзыв <b>минимум из 5 слов без буквы «е»</b> (и «ё»). Отзыв должен показываться честно.',
+hints:['Оценку «улучшают» — найди, где это выключить (⋯ в карточке). Галочка под отзывом тоже «улучшает». А кнопку «Опубликовать» закрывает чат поддержки — но чат прилип к экрану, а кнопка — нет.',
+'⋯ → выключи «Автоулучшение оценки». Нажми 3-ю звезду. Отзыв без «е», например: «Игра крутая, мозг взорван, спасибо большущий» (6 слов). Сними галочку «показывать как 5★». <b>Прокрути</b> форму, чтобы кнопка «Опубликовать» выехала из-под чата, и нажми её.'],
+css:`.l30w{position:relative;height:64vh;min-height:420px}.l30s{position:absolute;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch}.l30 .stars{font-size:44px;letter-spacing:4px;text-align:center}.l30 .stars button{border:none;background:none;font-size:44px;padding:0 2px;color:#d1d1d6}.l30 .stars button.on{color:#ffcc00}.l30chat{position:absolute;left:6%;right:6%;height:110px;background:linear-gradient(135deg,#7b2ff7,#ff4f6d);color:#fff;border-radius:18px;padding:14px 16px;box-shadow:0 10px 30px #0005;display:flex;align-items:center;gap:12px;font-size:15px;z-index:5;border:none;text-align:left}.l30chat .x{position:absolute;top:6px;right:10px;font-size:16px;opacity:.8}`,
+render(V,api){
+  let rating=0,auto=true,autoT=null;
+  V.innerHTML=`<div class="l30w"><div class="l30s" id="sc"><div class="l30 p16">
+    <div class="card"><div class="row" style="justify-content:space-between"><b style="font-size:18px">Оцените «UX-АД»</b><button class="btn ghost" data-t="dots" style="font-size:22px;padding:0 8px">⋯</button></div>
+    <div class="stars" id="st">${[1,2,3,4,5].map(i=>`<button data-t="star-${i}" data-s="${i}">★</button>`).join('')}</div><div class="muted" id="rl" style="text-align:center;font-size:14px">Нажмите на звезду</div></div>
+    <span class="lbl">Ваш отзыв</span><textarea class="inp" data-t="text" rows="4" placeholder="Расскажите, как вам игра"></textarea>
+    <div class="tiny" id="cnt" style="font-size:12px">Слов: 0 · букв «е»: 0</div>
+    <label class="cb"><input type="checkbox" data-t="as5" checked> <span class="tiny" style="font-size:12px">Разрешить показывать мой отзыв с оценкой 5★ (для красоты)</span></label>
+    <div id="pad1" style="height:30px"></div>
+    <button class="btn g" data-t="pub" style="padding:18px;display:block;width:64%;margin:0 auto">Опубликовать</button>
+    <div style="height:70vh;padding-top:24px" class="tiny">Публикуя отзыв, вы соглашаетесь с тем, что согласились. Политика конфиденциальности доступна по запросу, запрос — по почте, почта — по запросу.</div>
+  </div></div><button class="l30chat" data-t="chat"><span style="font-size:34px">💬</span><span><b>Поддержка онлайн!</b><br>Есть вопросы? Спросите нас 😊</span><span class="x" data-t="chatx">✕</span></button></div>`;
+  const q=s=>V.querySelector(s),sc=q('#sc'),pub=q('[data-t=pub]'),chat=q('[data-t=chat]');
+  api.later(()=>{const wrap=q('.l30w');const top=pub.offsetTop;sc.scrollTop=Math.max(0,top+pub.offsetHeight+24-wrap.clientHeight);const btnTop=pub.offsetTop-sc.scrollTop;chat.style.top=Math.max(0,btnTop+pub.offsetHeight/2-55)+'px'},60);
+  const drawStars=()=>{q('#st').querySelectorAll('button').forEach(b=>b.classList.toggle('on',+b.dataset.s<=rating));q('#rl').textContent=rating?`Ваша оценка: ${rating}`:'Нажмите на звезду'};
+  q('#st').querySelectorAll('button').forEach(b=>b.onclick=()=>{rating=+b.dataset.s;drawStars();clearTimeout(autoT);
+    if(auto&&rating<5)autoT=api.later(()=>{if(auto){rating=5;drawStars();api.toast('✨ Мы улучшили вашу оценку до 5 — вам же понравилось!')}},1300)});
+  q('[data-t=dots]').onclick=()=>{const s=api.sheet(`<h3>Параметры отзыва</h3><div class="li" style="padding:12px 0">Автоулучшение оценки ✨<button class="tg ${auto?'on':''}" data-t="autotg"></button></div><button class="btn gr w" data-t="dx" style="margin-top:8px">Готово</button>`);
+    const t=s.querySelector('[data-t=autotg]');t.onclick=()=>{auto=!auto;t.classList.toggle('on',auto);if(!auto)clearTimeout(autoT)};s.querySelector('[data-t=dx]').onclick=s.close};
+  const ta=q('[data-t=text]');
+  const stats=()=>{const v=ta.value;const words=v.split(/\s+/).filter(w=>/[a-zа-яё]/i.test(w));const e=(v.match(/[еёЕЁeE]/g)||[]).length;return{w:words.length,e}};
+  ta.oninput=()=>{const s=stats();q('#cnt').textContent=`Слов: ${s.w} · букв «е»: ${s.e}`};
+  chat.onclick=e=>{if(e.target.dataset.t==='chatx'){chat.style.opacity='.0';api.later(()=>{chat.style.opacity='1';api.toast('Мы заметили, что вам нужна помощь! 💬')},1500);return}
+    const s=api.sheet(`<h3>💬 Поддержка</h3><div style="background:#f2f2f7;border-radius:12px;padding:10px">Здравствуйте! Ваш вопрос очень важен для нас. Среднее время ответа: 3 часа 40 минут.</div><button class="btn gr w" data-t="cx" style="margin-top:10px">Закрыть</button>`);s.querySelector('[data-t=cx]').onclick=s.close};
+  pub.onclick=()=>{const s=stats();
+    if(rating!==3)return api.fail(rating?`Опубликовано с оценкой ${rating}★. А нужно ровно 3.`:'Вы не поставили оценку.');
+    if(s.w<5)return api.fail(`В отзыве ${s.w} слов. Нужно минимум 5.`);
+    if(s.e)return api.fail(`В отзыве ${s.e} букв «е». Даже латинская «e» не прокатит.`);
+    if(q('[data-t=as5]').checked)return api.fail('Отзыв опубликован… с подписью «5★». Галочка под отзывом!');
+    api.win()};
+}});
+
+window.__game={openLevel,LEVELS,get state(){return{cur,levelFails,won}}};
+menu();
+if('serviceWorker' in navigator&&location.protocol==='https:'&&window.top===window.self){try{navigator.serviceWorker.register('sw.js').catch(()=>{})}catch(e){}}
+</script>
+</body>
+</html>
